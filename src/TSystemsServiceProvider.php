@@ -1,12 +1,12 @@
 <?php
 
-namespace Ajtarragona\TSystems;
+namespace Ajtarragona\Tsystems;
 
 use Illuminate\Support\ServiceProvider;
 //use Illuminate\Support\Facades\Blade;
 //use Illuminate\Support\Facades\Schema;
 
-class TSystemsServiceProvider extends ServiceProvider
+class TsystemsServiceProvider extends ServiceProvider
 {
     
     /**
@@ -47,13 +47,13 @@ class TSystemsServiceProvider extends ServiceProvider
        	
         //defino facades
         $this->app->bind('tsystems-tercers', function(){
-            return new \Ajtarragona\TSystems\Services\TSystemsTercersService;
+            return new \Ajtarragona\Tsystems\Services\TsystemsTercersService;
         });
         $this->app->bind('tsystems-vialer', function(){
-            return new \Ajtarragona\TSystems\Services\TSystemsVialerService;
+            return new \Ajtarragona\Tsystems\Services\TsystemsVialerService;
         });
         $this->app->bind('tsystems-padro', function(){
-            return new \Ajtarragona\TSystems\Services\TSystemsPadroService;
+            return new \Ajtarragona\Tsystems\Services\TsystemsPadroService;
         });
         
 

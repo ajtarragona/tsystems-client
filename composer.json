@@ -1,6 +1,6 @@
 {
     "name": "ajtarragona/tsystems-client",
-    "description": "Client per serveis de l'ERP de TSystems (Tercers, Padró, Vialer)",
+    "description": "Client per serveis de l'ERP de Tsystems (Tercers, Padró, Vialer)",
     "keywords" : ["laravel5","laravel"],
     "type": "library",
     "license": "MIT",
@@ -24,12 +24,12 @@
     "extra": {
         "laravel": {
             "providers": [
-                "Ajtarragona\\TSystems\\TSystemsServiceProvider"
+                "Ajtarragona\\Tsystems\\TsystemsServiceProvider"
             ],
             "aliases": {
-                "TSystemsVialer" : "Ajtarragona\\TSystems\\Facades\\TSystemsVialer",
-                "TSystemsTercers" : "Ajtarragona\\TSystems\\Facades\\TSystemsTercers",
-                "TSystemsPadro" : "Ajtarragona\\TSystems\\Facades\\TSystemsPadro"
+                "TsystemsVialer" : "Ajtarragona\\Tsystems\\Facades\\TsystemsVialer",
+                "TsystemsTercers" : "Ajtarragona\\Tsystems\\Facades\\TsystemsTercers",
+                "TsystemsPadro" : "Ajtarragona\\Tsystems\\Facades\\TsystemsPadro"
             }
         }
     }

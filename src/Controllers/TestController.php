@@ -1,6 +1,6 @@
 <?php
 
-namespace Ajtarragona\TSystems\Controllers; 
+namespace Ajtarragona\Tsystems\Controllers; 
 
 use Illuminate\Routing\Controller;
 

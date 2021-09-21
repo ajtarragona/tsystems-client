@@ -1,10 +1,10 @@
 <?php
 
-namespace Ajtarragona\TSystems\Facades; 
+namespace Ajtarragona\Tsystems\Facades; 
 
 use Illuminate\Support\Facades\Facade;
 
-class TSystemsVialer extends Facade
+class TsystemsVialer extends Facade
 {
     /**
      * {@inheritdoc}

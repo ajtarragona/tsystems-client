@@ -1,12 +1,12 @@
 <?php
 
-namespace Ajtarragona\TSystems\Services;
+namespace Ajtarragona\Tsystems\Services;
 
 
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
-class TSystemsVialerService
+class TsystemsVialerService
 {
 
       
