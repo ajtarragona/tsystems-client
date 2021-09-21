@@ -1,6 +1,6 @@
 <?php
 
-namespace Ajtarragona\TSystems;
+namespace Ajtarragona\TSystems\Services;
 
 
 use Illuminate\Support\Facades\Storage;

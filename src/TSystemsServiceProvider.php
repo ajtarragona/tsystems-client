@@ -47,13 +47,13 @@ class TSystemsServiceProvider extends ServiceProvider
        	
         //defino facades
         $this->app->bind('tsystems-tercers', function(){
-            return new \Ajtarragona\TSystems\TSystemsTercersService;
+            return new \Ajtarragona\TSystems\Services\TSystemsTercersService;
         });
         $this->app->bind('tsystems-vialer', function(){
-            return new \Ajtarragona\TSystems\TSystemsVialerService;
+            return new \Ajtarragona\TSystems\Services\TSystemsVialerService;
         });
         $this->app->bind('tsystems-padro', function(){
-            return new \Ajtarragona\TSystems\TSystemsPadroService;
+            return new \Ajtarragona\TSystems\Services\TSystemsPadroService;
         });
         
 
