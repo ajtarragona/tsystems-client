@@ -1,0 +1,36 @@
+{
+    "name": "ajtarragona/tsystems-client",
+    "description": "Client per serveis de l'ERP de TSystems (Tercers, Padró, Vialer)",
+    "keywords" : ["laravel5","laravel"],
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Txomin Medrano Martorell",
+            "email": "tmedrano@tarragona.cat"
+        }
+    ],
+    "minimum-stability": "stable",
+    "require": {
+        "php": ">=7.0.0",
+        "laravel/framework": "^6.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Ajtarragona\\MailRelay\\": "./src"
+        }
+    },
+    
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Ajtarragona\\TSystems\\TSystemsServiceProvider"
+            ],
+            "aliases": {
+                "TSystemsVialer" : "Ajtarragona\\TSystems\\Facades\\TSystemsVialer",
+                "TSystemsTercers" : "Ajtarragona\\TSystems\\Facades\\TSystemsTercers",
+                "TSystemsPadro" : "Ajtarragona\\TSystems\\Facades\\TSystemsPadro"
+            }
+        }
+    }
+}
