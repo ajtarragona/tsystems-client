@@ -3,8 +3,6 @@
 namespace Ajtarragona\Tsystems;
 
 use Illuminate\Support\ServiceProvider;
-//use Illuminate\Support\Facades\Blade;
-//use Illuminate\Support\Facades\Schema;
 
 class TsystemsServiceProvider extends ServiceProvider
 {
