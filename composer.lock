@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "a677326e4678d6fe3dcbd96af306bad1",
+    "content-hash": "44b0ba64cc3b6e57e2949acef8728487",
     "packages": [
         {
             "name": "doctrine/inflector",
@@ -312,6 +312,40 @@
                 }
             ],
             "time": "2020-12-29T14:50:06+00:00"
+        },
+        {
+            "name": "jtrumbull/xml-parser",
+            "version": "v1.0.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/jtrumbull/xml-parser.git",
+                "reference": "94212d1bfc304ba9ac0a50b14e0a0cf67c877e86"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/jtrumbull/xml-parser/zipball/94212d1bfc304ba9ac0a50b14e0a0cf67c877e86",
+                "reference": "94212d1bfc304ba9ac0a50b14e0a0cf67c877e86",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "XMLParser\\": "lib/XMLParser"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "description": "PHP Class that parses XML objects",
+            "support": {
+                "issues": "https://github.com/jtrumbull/xml-parser/issues",
+                "source": "https://github.com/jtrumbull/xml-parser/tree/v1.0.2"
+            },
+            "time": "2016-02-04T12:49:48+00:00"
         },
         {
             "name": "laravel/framework",
