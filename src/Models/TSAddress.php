@@ -4,6 +4,8 @@ namespace Ajtarragona\Tsystems\Models;
 
 class TSAddress extends TSModel
 {
+    protected static $root_node="address";
+
     public $access;
     public $acronym;
     public $stname;

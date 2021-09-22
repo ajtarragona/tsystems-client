@@ -2,7 +2,7 @@
 
 namespace Ajtarragona\Tsystems\Services;
 
-
+use Ajtarragona\Tsystems\Models\TSPerson;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
@@ -18,10 +18,13 @@ class TsystemsTercersService extends TsystemsService
      *  El método devolverá la información de una persona a partir de un DNI
      */
     public function getPersonByIdNumber($dni){
-        return $this->call('getPersonByIdNumber',[
+        $ret=$this->call('getPersonByIdNumber',[
             'IDNUMBER'=>$dni,
             'ALLADDRESSES'=>true
         ]);
+        // dump($ret);
+
+        return TSPerson::cast($ret);
     }
 
     /** 

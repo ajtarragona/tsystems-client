@@ -140,7 +140,7 @@ class TsystemsService
 
             if(!$response) throw new TSystemsOperationException("Error parsing response");
 
-            if($response->ERROR){
+            if(isset($response->ERROR)){
                 throw new TSystemsOperationException($response->ERROR->DESCRIPTION);
             }else{
                 return $response;
