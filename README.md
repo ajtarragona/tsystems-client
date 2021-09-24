@@ -7,7 +7,7 @@ Client per serveis de l'ERP de Tsystems (Tercers, Padró, Vialer).
 ## Instalació
 
 ```bash
-composer require ajtarragona/tsystems-client:"@dev"
+composer require ajtarragona/tsystems-client
 ```
 
 ## Configuració
