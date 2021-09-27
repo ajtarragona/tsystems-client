@@ -1,6 +1,6 @@
 <?php
 
-use App\Helpers\XML2Array;
+use Ajtarragona\Tsystems\XML2Array;
 
 if (! function_exists('ts_tercers')) {
 	function ts_tercers($options=false){
