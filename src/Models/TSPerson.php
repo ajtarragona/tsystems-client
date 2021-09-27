@@ -20,24 +20,10 @@ class TSPerson extends TSModel
 
     public $addresses;
 
-    
-    public static function cast($object)
-    {
-        $person=parent::cast($object);
 
-        
-        if($person->addresses){
-            $addresses=$person->addresses->{"ns2:ADDRESS"};
-            $tmp=[];
-            if(is_array($addresses)){
-                foreach($addresses as $address){
-                    $tmp[]=TSAddress::cast($address);
-                }
-            }else{
-                $tmp[]=TSAddress::cast($person->addresses);
-            }
-            $person->addresses=$tmp;
-        }
-        return $person;
-    }
+    protected $model_cast = [
+        'addresses' => '\Ajtarragona\Tsystems\Models\TSAddress'
+    ];
+    
+    
 }

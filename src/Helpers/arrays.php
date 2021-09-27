@@ -32,6 +32,18 @@ if (! function_exists('to_object')) {
 }
 
 
+ 
+if (! function_exists('is_assoc')) {
+
+	function is_assoc($array){
+		if(!$array) return false;
+		if(!is_array($array)) return false;
+		return !(array_values($array) === $array);
+
+	}
+}
+
+
 
 if (! function_exists('to_array')) {
 	function to_array($object) {
@@ -66,3 +78,4 @@ if(!function_exists('array_to_csv'))
 		return $out;
     }
  }
+

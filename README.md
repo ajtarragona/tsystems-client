@@ -82,4 +82,8 @@ public function test(){
 ### AccedeTercers
 Funció | Paràmetres | Retorn 
 --- | --- | --- 
-**getPersonByIdNumber** | `id`: identificador (DNI) del tercer | Un objecte `Tercer` 
+**getPersonByIdNumber** | `id`: identificador (DNI) del tercer | Un objecte `TSPerson` 
+**getPersonByDboid** | `id`: identificador intern | Un objecte `Tercer` 
+**searchPersons** | `name`: nom a buscar<br/>`search_type`: 1-conté, 2-comença per, 3: acaba en, 4: és igual a| Un array d'objectes `TSPerson` 
+**createPerson** | `persondata[]`: array amb els valors de l'objecte `TSPerson`| Un array d'objectes `TSPerson` 
+**updatePerson** | `dboid`: Id intern del tercer a modificar<br/> `persondata[]`: array amb els valors de l'objecte `TSPerson` a modificar

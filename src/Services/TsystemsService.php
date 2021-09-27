@@ -3,10 +3,10 @@
 namespace Ajtarragona\Tsystems\Services;
 
 use Ajtarragona\Tsystems\Exceptions\TsystemsAuthException;
+use Ajtarragona\Tsystems\Exceptions\TsystemsNoResultsException;
 use Ajtarragona\Tsystems\Exceptions\TSystemsOperationException;
 use Ajtarragona\Tsystems\Traits\CanReturnCached;
-use App\Helpers\XML2Array;
-use Illuminate\Support\Facades\Storage;
+use Exception;
 use Illuminate\Support\Str;
 use SoapClient;
 use SoapVar;
@@ -17,8 +17,9 @@ class TsystemsService
 
     use CanReturnCached;
 
-    private $options;
-
+    protected $options;
+    protected static $business_name =  "";
+    
     public function __construct($options=array()) { 
 		$opts=config('tsystems');
 		if($options) $opts=array_merge($opts,$options);
@@ -62,27 +63,35 @@ class TsystemsService
     }
 
 
+    private static $default_options= [
+        "lower_request" => false,
+        "lower_response" => false
+    ];
 
-    protected function call($method, $arguments=[]){
+    protected static function businessName(){
+        return static::$business_name."Services";
+    }
+
+    protected function call($method, $arguments=[], $options=[]){
+
+        $options=array_merge(self::$default_options, $options);
 
         $token =  $this->login();
         // dump($token);
         // $hash = $this->getHash($method, $token, $arguments);
 		// return $this->returnCached($hash, function() use ($arguments, $token){
 
-            
+
             $data=to_xml([
                 $method => [
-                    "Request"=>$arguments
+                    ($options["lower_request"] ? "request":"Request") =>$arguments
                 ]
             ],[
-                "root_node"=>"BdtServices", 
+                "root_node"=> self::businessName(), 
                 "header"=>true,
-                 "xmlns"=>"http://dto.bdt.buroweb.conecta.es" ,
-                 "xmlns:xsd"=>"http://www.w3.org/2001/XMLSchema",
-                 "xmlns:xsi"=>"http://www.w3.org/2001/XMLSchema-instance"
+                "xmlns"=>"http://dto.bdt.buroweb.conecta.es" 
             ]);
-
+            
             // dd($data);
 
             $data=str_replace("\n","",$data);
@@ -90,7 +99,7 @@ class TsystemsService
 
             $xml=to_xml([
                 "application"=>"BUROWEB",
-                "businessName"=>"BdtServices",
+                "businessName"=>self::businessName(),
                 "operationName"=>$method,
                 "data"=>$data,
             ],["root_node"=>"taoServiceRequest", "header"=>false]);
@@ -113,44 +122,52 @@ class TsystemsService
             // dump($client->__getLastRequest());
             // echo "========= RESPONSE =========" . PHP_EOL;
             // dd($results);
-            return $this->parseResults($method,$results);
+            return $this->parseResults($method,$results,$options);
             
         // });
          
         
     }
 
-    private function parseResults($method,$results){
+
+
+
+    private function parseResults($method,$results, $options=[]){
+        // dd($results);
         if(!$results->doOperationTAOReturn ) throw new TSystemsOperationException("Operation could not run");
         // dump($results->doOperationTAOReturn);
         // dump($results->doOperationTAOReturn);
-        $response=XML2Array::createObject($results->doOperationTAOReturn);
+        $response=from_xml($results->doOperationTAOReturn);
        
         // dd($response);
+       
+            if(isset($response->taoServiceResponse) && $response->taoServiceResponse->resultCode =="OK"){
+                // dump($response->taoServiceResponse->data);
+                $data=from_xml($response->taoServiceResponse->data->{"@value"}); //, 'SimpleXMLElement', LIBXML_NOCDATA);
+                removeNamespacesKeys($data);
+                // dd($data);
+                if(!isset($data->{self::businessName()}->{"".$method}->{($options["lower_response"] ? "response":"Response")})){
+                    throw new TSystemsOperationException("Error parsing response");
+                }else{
+                    $response=$data->{self::businessName()}->{"".$method}->{($options["lower_response"] ? "response":"Response")};
+                    if($response===""){
+                        throw new TsystemsNoResultsException();
+                    }else{
+                        removeNamespacesKeys($response);
 
-        if(isset($response->taoServiceResponse) && $response->taoServiceResponse->resultCode =="OK"){
-            // dump($response->taoServiceResponse->data);
-            $data=XML2Array::createObject($response->taoServiceResponse->data->{"@value"}); //, 'SimpleXMLElement', LIBXML_NOCDATA);
-            // dd($data);
-            // var_dump($data->asXML());
-            // die();
-            // dd($data->{$method});
+                        if(isset($response->ERROR)){
+                            throw new TSystemsOperationException($response->ERROR->DESCRIPTION);
+                        }else{
+                            return $response;
+                        }
+                    }
+                }
 
-            $response=$data->{"ns2:BdtServices"}->{"ns2:".$method}->{"ns2:Response"} ?? null;
 
-            if(!$response) throw new TSystemsOperationException("Error parsing response");
-
-            if(isset($response->ERROR)){
-                throw new TSystemsOperationException($response->ERROR->DESCRIPTION);
             }else{
-                return $response;
+                throw new TSystemsOperationException($response->resultMessage);
             }
-
-
-        }else{
-            throw new TSystemsOperationException($response->resultMessage);
-        }
-
+        
 
     }
       

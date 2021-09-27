@@ -1,5 +1,7 @@
 <?php
 
+use App\Helpers\XML2Array;
+
 if (! function_exists('ts_tercers')) {
 	function ts_tercers($options=false){
 		return new \Ajtarragona\Tsystems\Services\TsystemsTercersService($options);
@@ -80,34 +82,66 @@ if (! function_exists('to_xml')) {
 	}
 }
 
+
 if (! function_exists('from_xml')) {
 	function from_xml($xmlnode) {
-		$root = (func_num_args() > 1 ? false : true);
-		$jsnode = array();
-	
-		if (!$root) {
-			if (count($xmlnode->attributes()) > 0){
-				$jsnode["$"] = array();
-				foreach($xmlnode->attributes() as $key => $value)
-					$jsnode["$"][$key] = (string)$value;
-			}
-	
-			$textcontent = trim((string)$xmlnode);
-			if (strlen($textcontent) > 0)
-				$jsnode["_"] = $textcontent;
-	
-			foreach ($xmlnode->children() as $childxmlnode) {
-				$childname = $childxmlnode->getName();
-				if (!array_key_exists($childname, $jsnode))
-					$jsnode[$childname] = array();
-				array_push($jsnode[$childname], from_xml($childxmlnode, true));
-			}
-			return $jsnode;
-		} else {
-			$nodename = $xmlnode->getName();
-			$jsnode[$nodename] = array();
-			array_push($jsnode[$nodename], from_xml($xmlnode, true));
-			return json_encode($jsnode);
-		}
+		return XML2Array::createObject($xmlnode);
 	} 
+}
+
+
+
+if (! function_exists('uppercaseKeys')) {
+ 	/**
+     * uppercase all keys
+     */
+    function uppercaseKeys(&$object){
+		// dump($object, is_assoc($object));
+		if(is_assoc($object)) $object=to_object($object);
+		// dump($object);
+        if(is_object($object)){
+            foreach($object as $key=>$value){   
+                // dump($key, $value);
+                if(is_object($value) || is_assoc($value) ){
+                    uppercaseKeys($value);
+                }
+                
+                if($key!==strtoupper($key)){
+                    $newkey=strtoupper($key);
+                    $object->{$newkey}=$value;
+                    unset($object->{$key});
+                }
+                
+
+            }
+        }
+		// dump($object);
+
+    }
+}
+
+if (! function_exists('removeNamespacesKeys')) {
+
+	function removeNamespacesKeys(&$object){
+		if(is_assoc($object)) $object=to_object($object);
+
+		if(is_object($object)){
+			foreach($object as $key=>$value){   
+				// dump($key, $value);
+				if(is_object($value)){
+					removeNamespacesKeys($value);
+				}
+
+				// dump(strpos($key,":"));
+				if(strpos($key,":")!==false){
+					$newkey=substr($key, strpos($key,":") + 1);
+					$object->{$newkey}=$value;
+					unset($object->{$key});
+				}
+
+			}
+		}
+
+	}
+
 }
