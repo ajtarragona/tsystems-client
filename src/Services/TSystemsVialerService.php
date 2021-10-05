@@ -8,8 +8,10 @@ use Ajtarragona\Tsystems\Models\TSProvince;
 class TsystemsVialerService extends TsystemsService
 {
 
-    protected static $business_name =  "Bdc";
-    
+    protected static $application =  "BUROWEB";
+    protected static $business_name =  "BdcServices";
+    protected static $xml_ns =  "http://dto.bdt.buroweb.conecta.es";
+
     
     
     public function getCountriesByName($name){

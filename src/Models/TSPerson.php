@@ -2,8 +2,12 @@
 
 namespace Ajtarragona\Tsystems\Models;
 
+use Ajtarragona\Tsystems\Traits\WithDBoid;
+
 class TSPerson extends TSModel
 {
+    use WithDBoid;
+    
     protected static $root_node="person";
 
     public $vatacronym;

@@ -5,6 +5,7 @@ namespace Ajtarragona\Tsystems\Services;
 use Ajtarragona\Tsystems\Exceptions\TsystemsAuthException;
 use Ajtarragona\Tsystems\Exceptions\TsystemsNoResultsException;
 use Ajtarragona\Tsystems\Exceptions\TSystemsOperationException;
+use Ajtarragona\Tsystems\Helpers\TSHelpers;
 use Ajtarragona\Tsystems\Traits\CanReturnCached;
 use Exception;
 use Illuminate\Support\Str;
@@ -16,14 +17,22 @@ class TsystemsService
 {
 
     use CanReturnCached;
+    
+    const ERROR_NO_RESULTS="0037";
+
 
     protected $options;
     protected static $business_name =  "";
+    protected static $application =  "";
+    protected static $xml_ns =  "";
+    protected static $data_xml_rootnode =  "";
     
     public function __construct($options=array()) { 
 		$opts=config('tsystems');
 		if($options) $opts=array_merge($opts,$options);
 		$this->options= json_decode(json_encode($opts), FALSE);
+
+       
 	}
 
         
@@ -65,13 +74,25 @@ class TsystemsService
 
     private static $default_options= [
         "lower_request" => false,
-        "lower_response" => false
+        "lower_response" => false,
+        "request_method_prefix" => false,
+        "response_method_prefix" => false,
     ];
 
-    protected static function businessName(){
-        return static::$business_name."Services";
+ 
+    private function requestName($method, $options){
+        $ret= $options["lower_request"] ? "request":"Request";
+        if($options["request_method_prefix"]) $ret=$method.$ret;
+        return $ret;
+
     }
 
+    private function responseName($method, $options){
+        $ret= $options["lower_response"] ? "response":"Response";
+        if($options["response_method_prefix"]) $ret=$method.$ret;
+        return $ret;
+
+    }
     protected function call($method, $arguments=[], $options=[]){
 
         $options=array_merge(self::$default_options, $options);
@@ -82,14 +103,14 @@ class TsystemsService
 		// return $this->returnCached($hash, function() use ($arguments, $token){
 
 
-            $data=to_xml([
+            $data=TSHelpers::to_xml([
                 $method => [
-                    ($options["lower_request"] ? "request":"Request") =>$arguments
+                    $this->requestName($method, $options) =>$arguments
                 ]
             ],[
-                "root_node"=> self::businessName(), 
+                "root_node"=> static::dataRootNodeName(), 
                 "header"=>true,
-                "xmlns"=>"http://dto.bdt.buroweb.conecta.es" 
+                "xmlns"=>static::$xml_ns,
             ]);
             
             // dd($data);
@@ -97,9 +118,9 @@ class TsystemsService
             $data=str_replace("\n","",$data);
 
 
-            $xml=to_xml([
-                "application"=>"BUROWEB",
-                "businessName"=>self::businessName(),
+            $xml=TSHelpers::to_xml([
+                "application"=>static::$application,
+                "businessName"=>static::$business_name,
                 "operationName"=>$method,
                 "data"=>$data,
             ],["root_node"=>"taoServiceRequest", "header"=>false]);
@@ -121,7 +142,7 @@ class TsystemsService
             // echo "========= REQUEST ==========" . PHP_EOL;
             // dump($client->__getLastRequest());
             // echo "========= RESPONSE =========" . PHP_EOL;
-            // dd($results);
+            // dump($results);
             return $this->parseResults($method,$results,$options);
             
         // });
@@ -132,31 +153,48 @@ class TsystemsService
 
 
 
+    private static function dataRootNodeName(){
+       return static::$data_xml_rootnode ? static::$data_xml_rootnode : static::$business_name;
+    }
+
+    
+    private function throwErrorCode($error){
+        switch($error->CODE){
+            case self::ERROR_NO_RESULTS: $exception= new TsystemsNoResultsException($error->DESCRIPTION);break;
+            default: $exception= new TSystemsOperationException($error->DESCRIPTION);break;
+        }
+
+        throw $exception;
+    }
+
     private function parseResults($method,$results, $options=[]){
         // dd($results);
         if(!$results->doOperationTAOReturn ) throw new TSystemsOperationException("Operation could not run");
         // dump($results->doOperationTAOReturn);
         // dump($results->doOperationTAOReturn);
-        $response=from_xml($results->doOperationTAOReturn);
+        $response=TSHelpers::from_xml($results->doOperationTAOReturn);
        
         // dd($response);
        
             if(isset($response->taoServiceResponse) && $response->taoServiceResponse->resultCode =="OK"){
                 // dump($response->taoServiceResponse->data);
-                $data=from_xml($response->taoServiceResponse->data->{"@value"}); //, 'SimpleXMLElement', LIBXML_NOCDATA);
-                removeNamespacesKeys($data);
+                $data=TSHelpers::from_xml($response->taoServiceResponse->data->{"@value"}); //, 'SimpleXMLElement', LIBXML_NOCDATA);
+                
+                TSHelpers::removeNamespacesKeys($data);
                 // dd($data);
-                if(!isset($data->{self::businessName()}->{"".$method}->{($options["lower_response"] ? "response":"Response")})){
+                if(!isset($data->{static::dataRootNodeName()}->{"".$method}->{ $this->responseName($method, $options)  })){
                     throw new TSystemsOperationException("Error parsing response");
                 }else{
-                    $response=$data->{self::businessName()}->{"".$method}->{($options["lower_response"] ? "response":"Response")};
+                    $response=$data->{static::dataRootNodeName()}->{"".$method}->{ $this->responseName($method, $options) };
+                    // dump($response);
                     if($response===""){
                         throw new TsystemsNoResultsException();
                     }else{
-                        removeNamespacesKeys($response);
+                        TSHelpers::removeNamespacesKeys($response);
 
                         if(isset($response->ERROR)){
-                            throw new TSystemsOperationException($response->ERROR->DESCRIPTION);
+                            $this->throwErrorCode($response->ERROR);
+                            
                         }else{
                             return $response;
                         }
@@ -165,7 +203,15 @@ class TsystemsService
 
 
             }else{
-                throw new TSystemsOperationException($response->resultMessage);
+
+                if(isset($response->resultMessage)){
+                    throw new TSystemsOperationException($response->resultMessage);
+                }else  if(isset($response->taoServiceResponse->resultMessage)){
+                    throw new TSystemsOperationException($response->taoServiceResponse->resultMessage);
+                }else{
+                    throw new TSystemsOperationException();
+                }
+
             }
         
 

@@ -2,6 +2,7 @@
 
 namespace Ajtarragona\Tsystems\Services;
 
+use Ajtarragona\Tsystems\Helpers\TSHelpers;
 use Ajtarragona\Tsystems\Models\TSPerson;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -9,7 +10,9 @@ use Illuminate\Support\Str;
 class TsystemsTercersService extends TsystemsService
 {
 
-    protected static $business_name =  "Bdt";
+    protected static $application =  "BUROWEB";
+    protected static $business_name =  "BdtServices";
+    protected static $xml_ns =  "http://dto.bdt.buroweb.conecta.es";
 
     public function test($name="Mundo"){
         return $this->login();
@@ -79,7 +82,7 @@ class TsystemsTercersService extends TsystemsService
     public function createPerson($persondata=[]){
 
  
-        uppercaseKeys($persondata);
+        TSHelpers::uppercaseKeys($persondata);
         // dump($persondata)
         $params=array_merge([
             'PERSONTYPE' => 'F',
@@ -106,7 +109,7 @@ class TsystemsTercersService extends TsystemsService
      */
     public function updatePerson($dboid, $persondata=[]){
  
-        uppercaseKeys($persondata);
+        TSHelpers::uppercaseKeys($persondata);
         // dump($persondata)
         $params=array_merge([
             'DBOID' => $dboid,

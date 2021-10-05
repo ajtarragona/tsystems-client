@@ -79,7 +79,7 @@ public function test(){
 
 ## Funcions
 
-### AccedeTercers
+### Tercers
 Funció | Paràmetres | Retorn 
 --- | --- | --- 
 **getPersonByIdNumber** | `id`: identificador (DNI) del tercer | Un objecte `TSPerson` 
@@ -87,3 +87,26 @@ Funció | Paràmetres | Retorn
 **searchPersons** | `name`: nom a buscar<br/>`search_type`: 1-conté, 2-comença per, 3: acaba en, 4: és igual a| Un array d'objectes `TSPerson` 
 **createPerson** | `persondata[]`: array amb els valors de l'objecte `TSPerson`| Un array d'objectes `TSPerson` 
 **updatePerson** | `dboid`: Id intern del tercer a modificar<br/> `persondata[]`: array amb els valors de l'objecte `TSPerson` a modificar
+
+### Vialer
+Funció | Paràmetres | Retorn 
+--- | --- | --- 
+**getCountriesByName** | `name`: nom a buscar | Un array d'objectes `TSCountry` 
+**getAllCountries** |  | Un array d'objectes `TSCountry` 
+**getProvinciesByName** | `name`: nom a buscar| Un array d'objectes `TSProvince` 
+
+### Padró
+Funció | Paràmetres | Retorn 
+--- | --- | --- 
+**getCurrentInstitucion** | | Un objecte `TSInstitucion` de la institució de l'ajuntament
+**getInstitucion** | `codigoProvincia*`: codi de provincia<br/>`codigoMunicipio*` codi de municipi | Un objecte `TSInstitucion`  
+**getHabitanteByDNI** | `dni`: dni a buscar | Un objecte `TSHabitante` 
+**getHabitantesByDNI** |  `dni`: dni a buscar | Un array d'objectes `TSHabitante` 
+**getHabitantesByPasaporte** | `pasaporte`: pasaporte a buscar | Un array d'objectes `TSHabitante` 
+**getHabitantesByTarjetaResidencia** | `id`: codi de la tarjeta de residencia a buscar |  Un array d'objectes `TSHabitante` 
+**getNumHabitantesByDNI** | `dni`: dni a buscar | Un numero enter
+**getNumHabitantesByPasaporte** | `pasaporte`: pasaporte a buscar | Un numero enter 
+**getNumHabitantesByTarjetaResidencia** | `id`: codi de la tarjeta de residencia a buscar | Un numero enter 
+**getHabitantesByNombre** | `name`: nom a buscar| Un numero enter
+**getNumHabitantesByNombre** | `name`: nom a buscar| Un numero enter
+

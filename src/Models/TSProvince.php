@@ -2,8 +2,13 @@
 
 namespace Ajtarragona\Tsystems\Models;
 
+use Ajtarragona\Tsystems\Traits\WithDBoid;
+
 class TSProvince extends TSModel
 {
+
+    use WithDBoid;
+    
     protected static $root_node="province";
 
     public $code;

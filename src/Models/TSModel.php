@@ -2,7 +2,9 @@
 
 namespace Ajtarragona\Tsystems\Models;
 
+use Ajtarragona\Tsystems\Helpers\TSHelpers;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Str;
 
 class TSModel
 {
@@ -10,13 +12,13 @@ class TSModel
     protected static $root_node="root";
     protected static $return_uppercase = true;
 
-    public $dboid;
     protected $model_cast=null;
 
     public static function returnUpper($msg){
         if(static::$return_uppercase) return strtoupper($msg);
         else return $msg;
     }
+
     public static function namespacedTag($tagname){
         if(static::$namespace) return static::$namespace.":".self::returnUpper($tagname);
         else return self::returnUpper($tagname);
@@ -30,12 +32,14 @@ class TSModel
         
         // dd($object);
         if(is_assoc($object)) $object=to_object($object);
-        uppercaseKeys($object);
+        TSHelpers::uppercaseKeys($object);
        
         // dump("CAST",$object);
         // dump(static::$namespace.":".strtoupper(static::$root_node));
         
         //si el root es el nom de l'objecte
+        
+       
         if(isset($object->{ self::namespacedTag(static::$root_node) })){
             $attributes= $object->{ self::namespacedTag(static::$root_node)} ?? null;
         }else{
@@ -53,7 +57,7 @@ class TSModel
             }
             return $ret;
         }else{
-            removeNamespacesKeys($attributes);
+            TSHelpers::removeNamespacesKeys($attributes);
             
             $classname=get_called_class();
             $classattributes= get_class_vars($classname);

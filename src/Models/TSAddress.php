@@ -2,10 +2,14 @@
 
 namespace Ajtarragona\Tsystems\Models;
 
+use Ajtarragona\Tsystems\Traits\WithDBoid;
+
 class TSAddress extends TSModel
 {
+    use WithDBoid;
+    
     protected static $root_node="address";
-
+    
     public $access;
     public $acronym;
     public $stname;
