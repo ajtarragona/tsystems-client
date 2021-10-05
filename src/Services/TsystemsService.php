@@ -11,7 +11,7 @@ use Exception;
 use Illuminate\Support\Str;
 use SoapClient;
 use SoapVar;
-
+use Log;
 
 class TsystemsService
 {
@@ -36,8 +36,21 @@ class TsystemsService
 	}
 
         
+    protected function debugEnabled(){
+        return $this->options->debug ? true: false;
+    }
+    protected function debug($message){
+        if($this->debugEnabled()){
+            if(is_array($message)) Log::debug($message);
+            else if(is_object($message)) Log::debug(json_encode($message));
+            else Log::debug($message );
+        }        
+    }
     protected function client(){
         // dump($this->options->ws_url);
+
+        $this->debug('Creating client from WSDL: '.$this->options->ws_url.'?wsdl' );
+
         return new SoapClient($this->options->ws_url.'?wsdl',
         array(
             
@@ -52,6 +65,9 @@ class TsystemsService
             )
         ) );
     }
+
+
+
     /**
      * login
      *
@@ -59,6 +75,8 @@ class TsystemsService
      */
     protected function login(){
        
+        $this->debug(__('Login : :user@:password', ["user"=>$this->options->ws_user,"password"=>$this->options->ws_password]) );
+
         $ret=$this->client()->login(["user"=>$this->options->ws_user,"password"=>$this->options->ws_password]);
 
         $token=$ret->loginReturn ?? null;
@@ -102,6 +120,10 @@ class TsystemsService
         // $hash = $this->getHash($method, $token, $arguments);
 		// return $this->returnCached($hash, function() use ($arguments, $token){
 
+            $this->debug("CALLING doOperationTAO:" . $method);
+            $this->debug("With arguments:");
+            $this->debug($arguments);
+
 
             $data=TSHelpers::to_xml([
                 $method => [
@@ -132,11 +154,16 @@ class TsystemsService
             $tokentag = new SoapVar("<token>{$token}</token>", XSD_ANYXML);
            
             
+           
             $results=$client->doOperationTAO([
                 'xmlIn' => $xmltag,
                 'token' => $tokentag,
             ]);
 
+            $this->debug("REQUEST:");
+            $this->debug($client->__getLastRequest());
+            $this->debug("RESPONSE:");
+            $this->debug($results);
             // echo "====== REQUEST HEADERS =====" . PHP_EOL;
             // dump($client->__getLastRequestHeaders());
             // echo "========= REQUEST ==========" . PHP_EOL;
@@ -164,8 +191,12 @@ class TsystemsService
             default: $exception= new TSystemsOperationException($error->DESCRIPTION);break;
         }
 
+        $this->debug("EXCEPTION: ");
+        $this->debug($exception);
         throw $exception;
     }
+
+
 
     private function parseResults($method,$results, $options=[]){
         // dd($results);
