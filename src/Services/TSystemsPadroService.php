@@ -68,11 +68,16 @@ class TsystemsPadroService extends TsystemsService
             
             // dump($ret);
             if($options->pdf){
-                return base64_decode($ret->PDF);
+                return $ret->PDF;
             }else{
                 return TSHabitant::cast($ret);
             }
         }
+    }
+
+
+    public function getPDFHabitanteByDNI($dni, $options=[]){
+        return $this->getHabitanteByDNI($dni, array_merge($options, ["pdf"=>true]));
     }
 
   

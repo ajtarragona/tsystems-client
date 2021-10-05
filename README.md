@@ -18,7 +18,11 @@ TSYSTEMS_DEBUG
 TSYSTEMS_WS_URL 
 TSYSTEMSAPI_WS_USER 
 TSYSTEMS_WS_PASSWORD
+TSYSTEMS_ID_INSTITUCION
 ```
+* **Nota**: En els Serveis de Padró, si la nostra aplicació no defineix `TSYSTEMS_ID_INSTITUCION` per cada crida es farà una crida prèvia per recuperar-lo
+
+
 Alternativament, pots publicar l'arxiu de configuració del paquet amb la comanda:
 
 ```bash
@@ -101,6 +105,7 @@ Funció | Paràmetres | Retorn
 **getCurrentInstitucion** | | Un objecte `TSInstitucion` de la institució de l'ajuntament
 **getInstitucion** | `codigoProvincia*`: codi de provincia<br/>`codigoMunicipio*` codi de municipi | Un objecte `TSInstitucion`  
 **getHabitanteByDNI** | `dni`: dni a buscar | Un objecte `TSHabitante` 
+**getPDFHabitanteByDNI** | `dni`: dni a buscar | document binari en base64 
 **getHabitantesByDNI** |  `dni`: dni a buscar | Un array d'objectes `TSHabitante` 
 **getHabitantesByPasaporte** | `pasaporte`: pasaporte a buscar | Un array d'objectes `TSHabitante` 
 **getHabitantesByTarjetaResidencia** | `id`: codi de la tarjeta de residencia a buscar |  Un array d'objectes `TSHabitante` 
