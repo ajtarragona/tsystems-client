@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Facade;
 
 class TsystemsTercers extends Facade
 {
+    
     /**
      * {@inheritdoc}
      */

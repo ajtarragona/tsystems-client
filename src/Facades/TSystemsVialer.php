@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Facade;
 
 class TsystemsVialer extends Facade
 {
+    
     /**
      * {@inheritdoc}
      */

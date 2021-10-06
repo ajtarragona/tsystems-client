@@ -18,6 +18,7 @@ class TsystemsTercersService extends TsystemsService
         return $this->login();
     }
 
+    
 
     /**
      *  El método devolverá la información de una persona a partir de un DNI

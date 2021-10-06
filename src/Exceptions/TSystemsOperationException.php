@@ -3,7 +3,7 @@ namespace Ajtarragona\Tsystems\Exceptions;
 
 use Exception;
 
-class TSystemsOperationException extends Exception{
+class TsystemsOperationException extends Exception{
 
      
 }

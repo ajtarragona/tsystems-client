@@ -3,7 +3,7 @@
 namespace Ajtarragona\Tsystems\Services;
 
 use Ajtarragona\Tsystems\Exceptions\TsystemsNoResultsException;
-use Ajtarragona\Tsystems\Exceptions\TSystemsOperationException;
+use Ajtarragona\Tsystems\Exceptions\TsystemsOperationException;
 use Ajtarragona\Tsystems\Models\TSHabitant;
 use Ajtarragona\Tsystems\Models\TSInstitucion;
 use Ajtarragona\Tsystems\Models\TSTipoDocumento;
@@ -18,6 +18,7 @@ class TsystemsPadroService extends TsystemsService
 
   
     
+
 
     public function getCurrentInstitucion(){
         if($this->options->oidparins){

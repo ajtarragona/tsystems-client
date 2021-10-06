@@ -4,7 +4,7 @@ namespace Ajtarragona\Tsystems\Services;
 
 use Ajtarragona\Tsystems\Exceptions\TsystemsAuthException;
 use Ajtarragona\Tsystems\Exceptions\TsystemsNoResultsException;
-use Ajtarragona\Tsystems\Exceptions\TSystemsOperationException;
+use Ajtarragona\Tsystems\Exceptions\TsystemsOperationException;
 use Ajtarragona\Tsystems\Helpers\TSHelpers;
 use Ajtarragona\Tsystems\Traits\CanReturnCached;
 use Exception;
@@ -188,7 +188,7 @@ class TsystemsService
     private function throwErrorCode($error){
         switch($error->CODE){
             case self::ERROR_NO_RESULTS: $exception= new TsystemsNoResultsException($error->DESCRIPTION);break;
-            default: $exception= new TSystemsOperationException($error->DESCRIPTION);break;
+            default: $exception= new TsystemsOperationException($error->DESCRIPTION);break;
         }
 
         $this->debug("EXCEPTION: ");
@@ -200,7 +200,7 @@ class TsystemsService
 
     private function parseResults($method,$results, $options=[]){
         // dd($results);
-        if(!$results->doOperationTAOReturn ) throw new TSystemsOperationException("Operation could not run");
+        if(!$results->doOperationTAOReturn ) throw new TsystemsOperationException("Operation could not run");
         // dump($results->doOperationTAOReturn);
         // dump($results->doOperationTAOReturn);
         $response=TSHelpers::from_xml($results->doOperationTAOReturn);
@@ -214,7 +214,7 @@ class TsystemsService
                 TSHelpers::removeNamespacesKeys($data);
                 // dd($data);
                 if(!isset($data->{static::dataRootNodeName()}->{"".$method}->{ $this->responseName($method, $options)  })){
-                    throw new TSystemsOperationException("Error parsing response");
+                    throw new TsystemsOperationException("Error parsing response");
                 }else{
                     $response=$data->{static::dataRootNodeName()}->{"".$method}->{ $this->responseName($method, $options) };
                     // dump($response);
@@ -236,11 +236,11 @@ class TsystemsService
             }else{
 
                 if(isset($response->resultMessage)){
-                    throw new TSystemsOperationException($response->resultMessage);
+                    throw new TsystemsOperationException($response->resultMessage);
                 }else  if(isset($response->taoServiceResponse->resultMessage)){
-                    throw new TSystemsOperationException($response->taoServiceResponse->resultMessage);
+                    throw new TsystemsOperationException($response->taoServiceResponse->resultMessage);
                 }else{
-                    throw new TSystemsOperationException();
+                    throw new TsystemsOperationException();
                 }
 
             }
