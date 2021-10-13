@@ -106,7 +106,7 @@ class XML2Array
 
     public static function createObject($inputXml, $config = array())
     {
-        return to_object(self::createArray($inputXml, $config));
+        return json_decode(json_encode(self::createArray($inputXml, $config)), FALSE);
     }
     
     /**
