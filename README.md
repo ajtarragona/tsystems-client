@@ -109,9 +109,9 @@ Funció | Paràmetres | Retorn
 **getHabitantesByDNI** |  `dni`: dni a buscar | Un array d'objectes `TSHabitante` 
 **getHabitantesByPasaporte** | `pasaporte`: pasaporte a buscar | Un array d'objectes `TSHabitante` 
 **getHabitantesByTarjetaResidencia** | `id`: codi de la tarjeta de residencia a buscar |  Un array d'objectes `TSHabitante` 
+**getHabitantesByNombre** | `nombre`: nom a buscar<br/>`apellido1`: primer cognom<br/>`apellido`: segon cognom | Un array d'objectes `TSHabitante`
 **getNumHabitantesByDNI** | `dni`: dni a buscar | Un numero enter
 **getNumHabitantesByPasaporte** | `pasaporte`: pasaporte a buscar | Un numero enter 
 **getNumHabitantesByTarjetaResidencia** | `id`: codi de la tarjeta de residencia a buscar | Un numero enter 
-**getHabitantesByNombre** | `name`: nom a buscar| Un numero enter
-**getNumHabitantesByNombre** | `name`: nom a buscar| Un numero enter
+**getNumHabitantesByNombre** | `nombre`: nom a buscar<br/>`apellido1`: primer cognom<br/>`apellido`: segon cognom | Un numero enter
 
