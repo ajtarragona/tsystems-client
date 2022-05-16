@@ -15,6 +15,8 @@ class TsystemsServiceProvider extends ServiceProvider
     public function boot()
     {
         
+        //vistas
+        $this->loadViewsFrom(__DIR__.'/resources/views', 'tsystems');
         
 
         
@@ -43,7 +45,9 @@ class TsystemsServiceProvider extends ServiceProvider
      */
     public function register()
     {
-       	
+       	//registro middleware
+        $this->app['router']->aliasMiddleware('tsystems-backend', \Ajtarragona\Tsystems\Middlewares\TsystemsBackend::class);
+
         //defino facades
         $this->app->bind('tsystems-tercers', function(){
             return new \Ajtarragona\Tsystems\Services\TsystemsTercersService;
@@ -55,7 +59,10 @@ class TsystemsServiceProvider extends ServiceProvider
             return new \Ajtarragona\Tsystems\Services\TsystemsPadroService;
         });
         
-
+        $this->app->bind('tsystems-expedients', function(){
+            return new \Ajtarragona\Tsystems\Services\TsystemsExpedientsService;
+        });
+        
         //helpers
         foreach (glob(__DIR__.'/Helpers/*.php') as $filename){
             require_once($filename);

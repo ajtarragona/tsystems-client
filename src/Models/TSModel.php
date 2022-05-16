@@ -13,6 +13,8 @@ class TSModel
     protected static $return_uppercase = true;
 
     protected $model_cast=null;
+    protected $property_mutators= null;
+
 
     public static function returnUpper($msg){
         if(static::$return_uppercase) return strtoupper($msg);
@@ -61,11 +63,17 @@ class TSModel
             
             $classname=get_called_class();
             $classattributes= get_class_vars($classname);
-            $classattributes=Arr::except($classattributes, ["namespace","root_node"]);
-            // dump($classattributes);
+            $classattributes=Arr::except($classattributes, ["namespace","root_node","property_mutators","model_cast","return_uppercase"]);
+           
+            $classattributes = array_keys($classattributes);
             $new = new $classname;
-            
-            foreach($classattributes as $property=>$value)
+
+            if($new->property_mutators){
+                $classattributes=array_unique(array_merge($classattributes, array_keys($new->property_mutators)));
+            }
+            // dump($attributes);
+            // dd($classattributes);
+            foreach($classattributes as $property)
             {
                 $object_property= self::namespacedTag($property); //  self::$namespace ? (self::$namespace.":".self::returnUpper($property)) : self::returnUpper($property) ;
                 // dump($property,$object_property);
@@ -95,13 +103,22 @@ class TSModel
                             }
                         }else{
                             // dd($values);
-                            $tmp[]=$classname::cast($values);
+                            $tmp=$classname::cast($values);
                         }
 
 
                         $new->{$attr}=$tmp;
                     }
 
+                }
+            }
+            // dump($new);
+            if($new->property_mutators){
+                foreach($new->property_mutators  as $original=>$mutated){
+                    if(isset($new->{$original})){
+                        $new->{$mutated} = $new->{$original};
+                        unset( $new->{$original} );
+                    }
                 }
             }
 

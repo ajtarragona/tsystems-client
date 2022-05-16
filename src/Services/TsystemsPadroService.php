@@ -4,7 +4,8 @@ namespace Ajtarragona\Tsystems\Services;
 
 use Ajtarragona\Tsystems\Exceptions\TsystemsNoResultsException;
 use Ajtarragona\Tsystems\Exceptions\TsystemsOperationException;
-use Ajtarragona\Tsystems\Models\TSHabitant;
+use Ajtarragona\Tsystems\Models\TSHabitante;
+use Ajtarragona\Tsystems\Models\TSHabitanteResponse;
 use Ajtarragona\Tsystems\Models\TSInstitucion;
 use Ajtarragona\Tsystems\Models\TSTipoDocumento;
 
@@ -40,7 +41,50 @@ class TsystemsPadroService extends TsystemsService
     }
     
     
+    public function getHabitanteByID($id, $options=[]){
+        $options= to_object(array_merge([
+            'direccion'=>  false,
+            'incluye_baja'=>  false,
+            'pdf'=>  false,
+            'pdflang'=>  'CA'
+        ], $options));
 
+        $institucion =  $this->getCurrentInstitucion();
+        if($institucion && $institucion->oidparins){
+            $args=[
+                'OIDPARINS'=>$institucion->oidparins,
+                'NIA'=>$id,
+                'NIVEL'=>  $options->direccion?2:1,
+                'INCLUYEBAJA'=>  $options->incluye_baja?1:0,
+                'PDF'=>  $options->pdf?1:0,
+                'PDFLANG'=>  $options->pdflang
+            ];
+            // dd($args);
+            $ret=$this->call('getHabitanteByNIA',$args,['request_method_prefix'=>true, 'response_method_prefix'=>true]);
+        //    dd($ret);
+            
+            // dump($ret);
+            if($options->pdf){
+                return $ret->PDF;
+            }else{
+                $ret = TSHabitanteResponse::cast($ret);
+                return $ret->habitant ?? null;
+            }
+        }
+    }
+
+        
+    /**
+     * getPDFHabitanteByID
+     * Retorna el PDF del habitante
+     *
+     * @param  mixed $id
+     * @param  mixed $options
+     * @return void
+     */
+    public function getPDFHabitanteByID($id, $options=[]){
+        return $this->getHabitanteByID($id, array_merge($options, ["pdf"=>true]));
+    }
 
     /**
      *  El método devolverá la información de una persona a partir de un DNI
@@ -65,13 +109,14 @@ class TsystemsPadroService extends TsystemsService
                 'PDF'=>  $options->pdf?1:0,
                 'PDFLANG'=>  $options->pdflang
             ],['request_method_prefix'=>true, 'response_method_prefix'=>true]);
-           
+        //    dd($ret);
             
             // dump($ret);
             if($options->pdf){
                 return $ret->PDF;
             }else{
-                return TSHabitant::cast($ret);
+                $ret = TSHabitanteResponse::cast($ret);
+                return $ret->habitant ?? null;
             }
         }
     }
@@ -109,10 +154,13 @@ class TsystemsPadroService extends TsystemsService
             if($options->count){
                 return intval($ret->EMPADRONADO??0);
             }else{
-                return TSHabitant::cast($ret);
+                $ret = TSHabitanteResponse::cast($ret);
+                return $ret->habitant ?? null;
             }
         }
     }
+
+    
 
     public function getHabitantesByDNI($id, $options=[]){
         return $this->getHabitantesByDocumento($id, array_merge($options,['tipdoc'=>TSTipoDocumento::DNI]));
@@ -145,7 +193,7 @@ class TsystemsPadroService extends TsystemsService
         $options= to_object(array_merge([
             'direccion'=>  false,
             'incluye_baja'=>  false,
-            'pagina'=>  1,
+            'c'=>  1,
             'count'=>false
         ], $options));
 
@@ -154,18 +202,30 @@ class TsystemsPadroService extends TsystemsService
         if($institucion && $institucion->oidparins){
             $ret=$this->call('getListHabitanteByName',[
                 'OIDPARINS'=>$institucion->oidparins,
-                'NOMBRE'=>$nombre,
-                'APELLIDO1'=>$apellido1,
-                'APELLIDO2'=>$apellido2,
+                'NOMBRE'=> strtoupper($nombre),
+                'APELLIDO1'=>strtoupper($apellido1),
+                'APELLIDO2'=>strtoupper($apellido2),
                 'NIVEL'=>$options->count ? 0 : ($options->direccion?2:1),
                 'INCLUYEBAJA'=>  $options->incluye_baja?1:0,
                 'PAGENUMBER'=>$options->pagina?$options->pagina:1,
                 
             ],['request_method_prefix'=>true, 'response_method_prefix'=>true]);
+
+            // dump($ret);
             if($options->count){
                 return intval($ret->EMPADRONADO??0);
             }else{
-                return TSHabitant::cast($ret);
+                $ret = TSHabitanteResponse::cast($ret);
+                // dd($ret);
+                if($ret){
+                    if($ret->habitant instanceof TSHabitante){
+                        return [$ret->habitant];
+                    }else{
+                        return collect($ret)->pluck('habitant')->toArray() ?? [];
+                    }
+                }else{
+                    return [];
+                }
             }
         }
     }
@@ -179,6 +239,72 @@ class TsystemsPadroService extends TsystemsService
         }catch(TsystemsNoResultsException $e){
             return 0;
         }
+    }
+
+
+    public function getFamiliaHabitanteByDNI($dni , $options=[]){
+            
+        $options= to_object(array_merge([
+            'tipdoc' => TSTipoDocumento::DNI,
+            'direccion'=>  false,
+            'pdf'=>  false,
+            'pdflang'=>  'CA'
+        ], $options));
+
+        $institucion =  $this->getCurrentInstitucion();
+        if($institucion && $institucion->oidparins){
+            $ret=$this->call('getFamiliaHabitanteByDNI',[
+                'OIDPARINS'=>$institucion->oidparins,
+                'IDNUMBER'=>$dni,
+                'TIPODOC'=> $options->tipdoc,
+                'NIVEL'=>  $options->direccion?2:1,
+                'PDF'=>  $options->pdf?1:0,
+                'PDFLANG'=>  $options->pdflang
+            ],['request_method_prefix'=>true, 'response_method_prefix'=>true]);
+        //    dd($ret);
+            
+            // dump($ret);
+            if($options->pdf){
+                return $ret->PDF;
+            }else{
+                $ret=TSHabitanteResponse::cast($ret);
+                return $ret->familiars ?? [];
+                
+            }
+        }
+        
+    }
+
+
+    public function getFamiliaHabitanteByID($id , $options=[]){
+            
+        $options= to_object(array_merge([
+            'direccion'=>  false,
+            'pdf'=>  false,
+            'pdflang'=>  'CA'
+        ], $options));
+
+        $institucion =  $this->getCurrentInstitucion();
+        if($institucion && $institucion->oidparins){
+            $ret=$this->call('getFamiliaHabitanteByNIA',[
+                'OIDPARINS'=>$institucion->oidparins,
+                'NIA'=>$id,
+                'NIVEL'=>  $options->direccion?2:1,
+                'PDF'=>  $options->pdf?1:0,
+                'PDFLANG'=>  $options->pdflang
+            ],['request_method_prefix'=>true, 'response_method_prefix'=>true]);
+        //    dd($ret);
+            
+            // dump($ret);
+            if($options->pdf){
+                return $ret->PDF;
+            }else{
+                $ret=TSHabitanteResponse::cast($ret);
+                return $ret->familiars ?? [];
+                
+            }
+        }
+        
     }
 
 

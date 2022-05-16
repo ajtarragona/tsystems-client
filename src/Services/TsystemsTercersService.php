@@ -54,9 +54,10 @@ class TsystemsTercersService extends TsystemsService
      *
      * @param  mixed $name Nom a buscar
      * @param  mixed $search_type Tipus de cerca (1: conté, 2: comença per, 3: acabe en: 4: es igual a)
+     * @param  mixed $page Número de pàgina ( 1 per defecte)
      * @return void
      */
-    public function searchPersons($name, $search_type=1){
+    public function searchPersons($name, $search_type=1, $page=1){
         $term='%'.$name.'%';
         if($search_type==2) $term=$name.'%';
         else if($search_type==3) $term='%'.$name;
@@ -64,6 +65,7 @@ class TsystemsTercersService extends TsystemsService
 
         $ret=$this->call('getPersonByName',[
             'FULLNAME'=>$term,
+            'PAGERESULTS' =>$page
         ],["lower_request"=>true, "lower_response"=>true]);
         // dump($ret);
 

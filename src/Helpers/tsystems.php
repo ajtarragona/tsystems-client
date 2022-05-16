@@ -16,3 +16,9 @@ if (! function_exists('ts_padro')) {
 		return new \Ajtarragona\Tsystems\Services\TsystemsPadroService($options);
 	}
 }
+
+if (! function_exists('ts_expedients')) {
+	function ts_expedients($options=false){
+		return new \Ajtarragona\Tsystems\Services\TsystemsExpedientsService($options);
+	}
+}

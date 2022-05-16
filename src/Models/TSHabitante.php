@@ -2,7 +2,9 @@
 
 namespace Ajtarragona\Tsystems\Models;
 
-class TSDatosPersonales extends TSModel
+use Ajtarragona\Tsystems\Facades\TsystemsPadro;
+
+class TSHabitante extends TSModel
 {
     protected static $root_node="datospersonales";
 
@@ -13,6 +15,7 @@ class TSDatosPersonales extends TSModel
     protected $model_cast = [
         'direccion' => '\Ajtarragona\Tsystems\Models\TSDireccionHabitante'
     ];
+
     public $habcodind; // nia
     public $habnom; // nombre
     public $habap1hab; // primer apellido
@@ -52,4 +55,37 @@ class TSDatosPersonales extends TSModel
     public $person; // dboid de la tabla person a la que referencia el habitante, sólo visible si el parámetro (tpersparam)
 
 
+    
+    
+    public function getNom(){
+        return  $this->habnom;
+    }
+    public function getCognom1(){
+        return  $this->habap1hab;
+    }
+    public function getCognom2(){
+       return  $this->habap2hab;
+    }
+
+    public function getDni(){
+        return  $this->habnumide.$this->habcondig;
+    }
+
+
+    public function getNomComplet(){
+        $ret=[];
+        $nom=$this->getNom();
+        $cognom1=$this->getCognom1();
+        $cognom2=$this->getCognom2();
+        
+        if($nom) $ret[]=$nom;
+        if($cognom1) $ret[]=$cognom1;
+        if($cognom2) $ret[]=$cognom2;
+
+        return implode(" ", $ret);
+    }
+    
+    public function getFamiliars(){
+        return TsystemsPadro::getFamiliaHabitanteByID($this->habcodind);
+    }
 }

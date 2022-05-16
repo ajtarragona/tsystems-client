@@ -9,6 +9,7 @@ return [
 	"oidparins"=> env('TSYSTEMS_ID_INSTITUCION', ""),
 	"country_spain"=> 108,
 	"provincia_tarragona" => 43,
-	"municipio_tarragona" => 148
+	"municipio_tarragona" => 148,
+	"backend" => env('TSYSTEMS_BACKEND',true),
 ];
 
