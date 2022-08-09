@@ -101,6 +101,7 @@ class TsystemsService
     private function requestName($method, $options){
         $ret= $options["lower_request"] ? "request":"Request";
         if($options["request_method_prefix"]) $ret=$method.$ret;
+        // dd($ret);
         return $ret;
 
     }
@@ -170,7 +171,9 @@ class TsystemsService
             // dump($client->__getLastRequest());
             // echo "========= RESPONSE =========" . PHP_EOL;
             // dump($results);
+            // dd($results);
             return $this->parseResults($method,$results,$options);
+            
             
         // });
          
@@ -203,26 +206,29 @@ class TsystemsService
         if(!$results->doOperationTAOReturn ) throw new TsystemsOperationException("Operation could not run");
         // dump($results->doOperationTAOReturn);
         // dump($results->doOperationTAOReturn);
-        $response=TSHelpers::from_xml($results->doOperationTAOReturn);
+       if(!TSHelpers::is_xml($results->doOperationTAOReturn)){
+           throw new TsystemsOperationException($results->doOperationTAOReturn);
+       }
+       $response=TSHelpers::from_xml($results->doOperationTAOReturn);
        
-        // dd($response);
        
             if(isset($response->taoServiceResponse) && $response->taoServiceResponse->resultCode =="OK"){
                 // dump($response->taoServiceResponse->data);
                 $data=TSHelpers::from_xml($response->taoServiceResponse->data->{"@value"}); //, 'SimpleXMLElement', LIBXML_NOCDATA);
-                
-                TSHelpers::removeNamespacesKeys($data);
                 // dd($data);
+                TSHelpers::removeNamespacesKeys($data);
+                // dd($data, static::dataRootNodeName(), $method, $this->responseName($method, $options));
                 if(!isset($data->{static::dataRootNodeName()}->{"".$method}->{ $this->responseName($method, $options)  })){
                     throw new TsystemsOperationException("Error parsing response");
                 }else{
+                    // dd(static::dataRootNodeName());
                     $response=$data->{static::dataRootNodeName()}->{"".$method}->{ $this->responseName($method, $options) };
                     // dump($response);
                     if($response===""){
                         throw new TsystemsNoResultsException();
                     }else{
                         TSHelpers::removeNamespacesKeys($response);
-
+                        
                         if(isset($response->ERROR)){
                             $this->throwErrorCode($response->ERROR);
                             

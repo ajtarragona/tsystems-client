@@ -4,6 +4,26 @@ namespace Ajtarragona\Tsystems\Helpers;
 use SimpleXMLElement;
 
 class TSHelpers{
+
+    public static function is_xml($content)
+    {
+        $content = trim($content);
+        if (empty($content)) {
+            return false;
+        }
+        //html go to hell!
+        if (stripos($content, '<!DOCTYPE html>') !== false) {
+            return false;
+        }
+
+        libxml_use_internal_errors(true);
+        simplexml_load_string($content);
+        $errors = libxml_get_errors();          
+        libxml_clear_errors();  
+
+        return empty($errors);
+    }
+
     public static function array_to_xml($array, &$xml_user_info) {
         foreach($array as $key => $value) {
             if(is_array($value)) {

@@ -3,6 +3,8 @@
 namespace Ajtarragona\Tsystems\Services;
 
 use Ajtarragona\Tsystems\Helpers\TSHelpers;
+use Ajtarragona\Tsystems\Models\TSDocumento;
+use Ajtarragona\Tsystems\Models\TSExpedient;
 use Ajtarragona\Tsystems\Models\TSPerson;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -19,14 +21,53 @@ class TsystemsExpedientsService extends TsystemsService
     
 
  
+    public function getExpedientsByDNI($dni){
+        $ret=$this->call('ListaExpbyDNI',[
+            'IDNUMBER'=>$dni,
+        ],['request_method_prefix'=>true, 'response_method_prefix'=>true]);
+        return TSExpedient::cast($ret, ['root_node'=>'ListaExpedientes','forcemultiple'=>true]);
+    }
+
     public function getExpedientByID($id){
         $ret=$this->call('ConsultaEXPByDboid',[
             'DBOID_EXP'=>$id,
-        ],['request_method_prefix'=>true]);
-        dd($ret);
+        ],['request_method_prefix'=>true, 'response_method_prefix'=>true]);
+        return TSExpedient::cast($ret);
 
         
     }
+
+    public function getDocumentosExpedientByID($id){
+        
+
+        $ret=$this->call('ConsultaDocumentosbyDboid',[
+            'DBOID_EXP'=>$id,
+        ],['request_method_prefix'=>true, 'response_method_prefix'=>true]);
+       
+        return TSDocumento::cast($ret, ['root_node'=>'ListaDocumentos','forcemultiple'=>true]);
+
+        
+    }
+    public function getExpedientByNumero($numero){
+        $ret=$this->call('ConsultaExpByIdent',[
+            'Expediente'=>$numero,
+        ],['request_method_prefix'=>true, 'response_method_prefix'=>true]);
+        return TSExpedient::cast($ret);
+
+        
+    }
+    public function getExpedientByNumeroAnyo($numero,$any,$ident){
+        $ret=$this->call('ConsultaExpByIdent',[
+            'Ejercicio'=>$any,
+            'Numero'=>$numero,
+            'identificador'=>$ident,
+        ],['request_method_prefix'=>true, 'response_method_prefix'=>true]);
+        return TSExpedient::cast($ret);
+
+        
+    }
+
+    
 
 
 }

@@ -2,7 +2,9 @@
 
 namespace Ajtarragona\Tsystems\Services;
 
+use Ajtarragona\Tsystems\Facades\TsystemsVialer;
 use Ajtarragona\Tsystems\Helpers\TSHelpers;
+use Ajtarragona\Tsystems\Models\TSAddress;
 use Ajtarragona\Tsystems\Models\TSPerson;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -124,4 +126,20 @@ class TsystemsTercersService extends TsystemsService
         return $person;
         
     }
+
+    
+    /**
+     * addAddressToPerson
+     * Añade una direcció a una persona a partir de su dboid. 
+     * La dirección es un array asociativo. Los campos son los del model TSAddress
+     *
+     * @param  mixed $person_dboid DBOID de la persona
+     * @param  mixed $address array asociativo. Los campos son los del model TSAddress
+     * @return TSAddress $address retorna la direccion creada
+     */
+    public function addAddressToPerson($person_dboid, $address=[], $addresstype="SEGON"){
+        
+        return TsystemsVialer::createAddress($person_dboid, $address, $addresstype);
+    }
+
 }

@@ -16,6 +16,11 @@ class TSModel
     protected $property_mutators= null;
 
 
+    protected static $default_options=[
+        'forcemultiple'=>false,
+        'root_node'=>null,
+    ];
+
     public static function returnUpper($msg){
         if(static::$return_uppercase) return strtoupper($msg);
         else return $msg;
@@ -29,9 +34,12 @@ class TSModel
 
    
 
-    public static function cast($object)
+    public static function cast($object, $options=[])
     {
         
+        $options=array_merge(static::$default_options, $options);
+
+        $root_node_name= $options["root_node"] ? $options["root_node"] : static::$root_node;
         // dd($object);
         if(is_assoc($object)) $object=to_object($object);
         TSHelpers::uppercaseKeys($object);
@@ -42,8 +50,8 @@ class TSModel
         //si el root es el nom de l'objecte
         
        
-        if(isset($object->{ self::namespacedTag(static::$root_node) })){
-            $attributes= $object->{ self::namespacedTag(static::$root_node)} ?? null;
+        if(isset($object->{ self::namespacedTag($root_node_name) })){
+            $attributes= $object->{ self::namespacedTag($root_node_name)} ?? null;
         }else{
             $attributes=$object;
         }
@@ -122,7 +130,10 @@ class TSModel
                 }
             }
 
+
+            if($options["forcemultiple"]) $new=[$new];
             return $new;
+
         }
     }
 

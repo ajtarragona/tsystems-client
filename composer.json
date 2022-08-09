@@ -30,8 +30,8 @@
             "aliases": {
                 "TsystemsVialer" : "Ajtarragona\\Tsystems\\Facades\\TsystemsVialer",
                 "TsystemsTercers" : "Ajtarragona\\Tsystems\\Facades\\TsystemsTercers",
-                "TsystemsPadro" : "Ajtarragona\\Tsystems\\Facades\\TsystemsPadro",
-                "TsystemsExpedients" : "Ajtarragona\\Tsystems\\Facades\\TsystemsExpedients"
+                "TsystemsExpedients" : "Ajtarragona\\Tsystems\\Facades\\TsystemsExpedients",
+                "TsystemsPadro" : "Ajtarragona\\Tsystems\\Facades\\TsystemsPadro"
             }
         }
     }
