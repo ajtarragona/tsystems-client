@@ -26,10 +26,12 @@ class TsystemsTercersService extends TsystemsService
      *  El método devolverá la información de una persona a partir de un DNI
      */
     public function getPersonByIdNumber($dni, $addresses=true){
-        $ret=$this->call('getPersonByIdNumber',[
-            'IDNUMBER'=>$dni,
-            'ALLADDRESSES'=>$addresses
-        ]);
+        $args=[
+            'IDNUMBER'=>$dni
+        ];
+        if($addresses) $args['ALLADDRESSES']=$addresses;
+
+        $ret=$this->call('getPersonByIdNumber', $args);
         // dump($ret);
 
         return TSPerson::cast($ret);
@@ -40,10 +42,12 @@ class TsystemsTercersService extends TsystemsService
      * El método devolverá la información de una persona a partir del identificador interno Dboid
      */
     public function getPersonByDboid($dboid, $addresses=true){
-        $ret=$this->call('getPersonByDboid',[
-            'DBOID'=>$dboid,
-            'ALLADDRESSES'=>$addresses
-        ]);
+         $args=[
+            'DBOID'=>$dboid
+        ];
+        if($addresses) $args['ALLADDRESSES']=$addresses;
+        
+        $ret=$this->call('getPersonByDboid',$args);
         // dump($ret);
 
         return TSPerson::cast($ret);
