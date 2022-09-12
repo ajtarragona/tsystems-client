@@ -22,3 +22,9 @@ if (! function_exists('ts_expedients')) {
 		return new \Ajtarragona\Tsystems\Services\TsystemsExpedientsService($options);
 	}
 }
+
+if (! function_exists('ts_rdpost')) {
+	function ts_rdpost($options=false){
+		return new \Ajtarragona\Tsystems\Services\TsystemsRdpostService($options);
+	}
+}

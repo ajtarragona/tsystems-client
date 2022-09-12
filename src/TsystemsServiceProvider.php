@@ -63,6 +63,10 @@ class TsystemsServiceProvider extends ServiceProvider
             return new \Ajtarragona\Tsystems\Services\TsystemsExpedientsService;
         });
         
+        $this->app->bind('tsystems-rdpost', function(){
+            return new \Ajtarragona\Tsystems\Services\TsystemsRdpostService;
+        });
+
         //helpers
         foreach (glob(__DIR__.'/Helpers/*.php') as $filename){
             require_once($filename);

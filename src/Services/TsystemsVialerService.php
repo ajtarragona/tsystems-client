@@ -28,6 +28,7 @@ class TsystemsVialerService extends TsystemsService
     }
 
 
+    /** NO funciona */
     public function getAllCountries(){
         $ret=$this->call('getCountryListByStName',[
             'CNTRYNAME'=>''
@@ -36,6 +37,7 @@ class TsystemsVialerService extends TsystemsService
         return TSCountry::cast($ret);
     }
 
+    
     public function getProvinciesByName($name, $countrycode=null){
         if(!$countrycode) $countrycode=$this->options->country_spain;
 

@@ -95,7 +95,8 @@ class TsystemsPadroService extends TsystemsService
             'direccion'=>  false,
             'incluye_baja'=>  false,
             'pdf'=>  false,
-            'pdflang'=>  'CA'
+            'pdflang'=>  'CA',
+            'fecha'=>false
         ], $options));
 
         $institucion =  $this->getCurrentInstitucion();
@@ -106,6 +107,7 @@ class TsystemsPadroService extends TsystemsService
                 'TIPODOC'=> $options->tipdoc,
                 'NIVEL'=>  $options->direccion?2:1,
                 'INCLUYEBAJA'=>  $options->incluye_baja?1:0,
+                'FECHA' => $options->fecha ? $options->fecha : date('Ymd'),  
                 'PDF'=>  $options->pdf?1:0,
                 'PDFLANG'=>  $options->pdflang
             ],['request_method_prefix'=>true, 'response_method_prefix'=>true]);
@@ -134,6 +136,7 @@ class TsystemsPadroService extends TsystemsService
             'tipdoc' => TSTipoDocumento::DNI,
             'direccion'=>  false,
             'incluye_baja'=>  false,
+            'fecha' => false,
             'pagina'=>  1,
             'count'=> false
         ], $options));
@@ -147,6 +150,7 @@ class TsystemsPadroService extends TsystemsService
                 'TIPODOC'=> $options->tipdoc,
                 'NIVEL'=>$options->count ? 0 : ($options->direccion?2:1),
                 'INCLUYEBAJA'=>  $options->incluye_baja?1:0,
+                'FECHA' => $options->fecha ? $options->fecha : date('Ymd'),  
                 'PAGENUMBER'=>$options->pagina?$options->pagina:1,
                 
             ],['request_method_prefix'=>true, 'response_method_prefix'=>true]);
@@ -194,8 +198,10 @@ class TsystemsPadroService extends TsystemsService
             'direccion'=>  false,
             'incluye_baja'=>  false,
             'c'=>  1,
-            'count'=>false
+            'count'=>false,
+            'fecha'=>false
         ], $options));
+
 
         $institucion =  $this->getCurrentInstitucion();
 
@@ -207,6 +213,7 @@ class TsystemsPadroService extends TsystemsService
                 'APELLIDO2'=>strtoupper($apellido2),
                 'NIVEL'=>$options->count ? 0 : ($options->direccion?2:1),
                 'INCLUYEBAJA'=>  $options->incluye_baja?1:0,
+                'FECHA' => $options->fecha ? $options->fecha : date('Ymd'),  
                 'PAGENUMBER'=>$options->pagina?$options->pagina:1,
                 
             ],['request_method_prefix'=>true, 'response_method_prefix'=>true]);
