@@ -141,7 +141,7 @@ class TsystemsTercersService extends TsystemsService
      * @param  mixed $address array asociativo. Los campos son los del model TSAddress
      * @return TSAddress $address retorna la direccion creada
      */
-    public function addAddressToPerson($person_dboid, $address=[], $addresstype="SEGON"){
+    public function addAddressToPerson($person_dboid, $address=[], $addresstype="API"){
         
         return TsystemsVialer::createAddress($person_dboid, $address, $addresstype);
     }

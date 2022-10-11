@@ -155,7 +155,7 @@ class TsystemsVialerService extends TsystemsService
         return TSAddress::cast($ret);
     }
 
-    public function createAddress($person_dboid, $address=[], $addresstype="SEGON", $muncode=null , $provcode=null, $countrycode=null){
+    public function createAddress($person_dboid, $address=[], $addresstype="API", $muncode=null , $provcode=null, $countrycode=null){
         if(!$countrycode) $countrycode=$this->options->country_spain;
         if(!$provcode) $provcode=$this->options->provincia_tarragona;
         if(!$muncode) $muncode=$this->options->municipio_tarragona;
@@ -173,7 +173,9 @@ class TsystemsVialerService extends TsystemsService
         ],$address);
 
         $access=[
-            "DBOID"=>"",
+            "STREET"=>[
+                "CODE"=>null
+            ],
             "NUM1"=>"",
             "NUM2"=>"",
             "DUPLI1"=>"",
@@ -186,9 +188,9 @@ class TsystemsVialerService extends TsystemsService
 
         $address["ACCESS"] = array_merge($access, $address["ACCESS"]);
         $args=[
-            "ADDRESS" =>$address,
-            "PERSONID"=> $person_dboid,
-            "ADDRESSTYPE" => $addresstype
+            "address" =>$address, //ha de ser minuscula
+            "personId"=> $person_dboid,
+            "addressType" => $addresstype
         ];
         // dd($args);
         $ret=$this->call('createAddress',

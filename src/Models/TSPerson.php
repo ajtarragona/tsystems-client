@@ -2,6 +2,7 @@
 
 namespace Ajtarragona\Tsystems\Models;
 
+use Ajtarragona\Tsystems\Facades\TsystemsTercers;
 use Ajtarragona\Tsystems\Traits\WithDBoid;
 
 class TSPerson extends TSModel
@@ -28,6 +29,11 @@ class TSPerson extends TSModel
     protected $model_cast = [
         'addresses' => '\Ajtarragona\Tsystems\Models\TSAddress'
     ];
+
+
+    public function addAdreca($address, $addresstype="API"){
+        return TsystemsTercers::addAddressToPerson($this->dboid, $address,$addresstype);
+    }
     
     
 }
