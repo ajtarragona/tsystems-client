@@ -172,21 +172,27 @@ class TsystemsVialerService extends TsystemsService
             ]
         ],$address);
 
-        $access=[
-            "STREET"=>[
-                "CODE"=>null
-            ],
-            "NUM1"=>"",
-            "NUM2"=>"",
-            "DUPLI1"=>"",
-            "DUPLI2"=>"",
-            "INDKM"=>"",
-            "KM"=>"",
-            "INDBLOCK"=>"",
-            "FBLOCK"=>""
-        ];
+        
+        if(!isset($address["ACCESS"])) return false; //si no hay calle, malament
 
-        $address["ACCESS"] = array_merge($access, $address["ACCESS"]);
+        
+        if(isset($address["KM"]) && $address["KM"]){
+            //si se indica km no se indica numero o bloque
+            $address["INDKM"] ="K";
+            if(isset($address["FBLOCK"])) unset($address["FBLOCK"]);
+            if(isset($address["NUM1"])) unset($address["NUM1"]);
+            if(isset($address["NUM2"])) unset($address["NUM2"]);
+            if(isset($address["DUPLI1"])) unset($address["DUPLI1"]);
+            if(isset($address["DUPLI2"])) unset($address["DUPLI2"]);
+            
+        }
+        
+        if(isset($address["FBLOCK"]) && $address["FBLOCK"]){
+            $address["INDBLOCK"] ="B";
+        }
+
+        // $address["ACCESS"] = array_merge($access, $address["ACCESS"]);
+        // dd($address);
         $args=[
             "address" =>$address, //ha de ser minuscula
             "personId"=> $person_dboid,
