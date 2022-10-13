@@ -8,6 +8,7 @@ use Ajtarragona\Tsystems\Models\TSCountry;
 use Ajtarragona\Tsystems\Models\TSMunicipality;
 use Ajtarragona\Tsystems\Models\TSProvince;
 use Ajtarragona\Tsystems\Models\TSStreet;
+use Cache;
 
 class TsystemsVialerService extends TsystemsService
 {
@@ -16,7 +17,7 @@ class TsystemsVialerService extends TsystemsService
     protected static $business_name =  "BdcServices";
     protected static $xml_ns =  "http://dto.bdt.buroweb.conecta.es";
 
-    
+    protected $cache_duration = 86400; //1 day in seconds
     
 
     public function getCountriesByName($name){
@@ -37,7 +38,15 @@ class TsystemsVialerService extends TsystemsService
         return TSCountry::cast($ret);
     }
 
-    
+    public function getAllProvincies($countrycode=null){
+        if(!$countrycode) $countrycode=$this->options->country_spain;
+        $key="tsystems_all_provincies_".$countrycode;
+        
+        return Cache::remember($key, $this->cache_duration , function() use ($countrycode){
+            return $this->getProvinciesByName('',$countrycode);
+        });
+    }
+
     public function getProvinciesByName($name, $countrycode=null){
         if(!$countrycode) $countrycode=$this->options->country_spain;
 
@@ -52,15 +61,36 @@ class TsystemsVialerService extends TsystemsService
         return TSProvince::cast($ret);
     }
 
+    public function getProvinciaByCode($code, $countrycode=null){
+        $all=$this->getAllProvincies($countrycode);
+        //no existe el metodo, recojo todos los municipios y filtro la coleccion por codigo
+        return collect($all)->filter(function($provincia) use($code){
+            // dump($municipi);
+            // if($provincia->code == "".$code) dump($provincia);
+            return $provincia->code == "".$code; 
+        })->first();
+    }
+
+
+    public function getAllMunicipis($provcode=null){
+        if(!$provcode) $provcode=$this->options->provincia_tarragona;
+        $key="tsystems_all_municipis_".$provcode;
+        
+        return Cache::remember($key, $this->cache_duration , function() use ($provcode){
+            return $this->getMunicipisByName('',$provcode);
+        });
+    }
+
 
     public function getMunicipisByName($name, $provcode=null){
         if(!$provcode) $provcode=$this->options->provincia_tarragona;
-
+        
+        $provincia=$this->getProvinciaByCode($provcode);
         // dd($provcode);
         $ret=$this->call('getMuncpalityListByStName',[
             'MUNNAME'=>$name,
             'PROVINCE' =>[
-                'CODE' => $provcode
+                'DBOID' => $provincia->dboid
             ]
             
         ]);
@@ -74,11 +104,13 @@ class TsystemsVialerService extends TsystemsService
         if(!$provcode) $provcode=$this->options->provincia_tarragona;
 
         // dd($provcode);
-        $all=$this->getMunicipisByName('',$provcode);
+        $all=$this->getAllMunicipis($provcode);
+        // dd($all);
         // dd($code, collect($all)->count());
         //no existe el metodo, recojo todos los municipios y filtro la coleccion por codigo
         return collect($all)->filter(function($municipi) use($code){
-            // dump($municipi->code, $code);
+            // dump($municipi);
+            // if($municipi->code == "".$code) dump($municipi);
             return $municipi->code == "".$code; 
         })->first();
     }
@@ -107,17 +139,15 @@ class TsystemsVialerService extends TsystemsService
         
     public function getCarrerByCode($code, $muncode=null){
         if(!$muncode) $muncode=$this->options->municipio_tarragona;
-
-        // dump("muncode",$muncode);
+        $municipi=$this->getMunicipiByCodi($muncode);
+        
+        // dd("municipi",$municipi);
         // if($muncode){
         //     $municipi= self::getMu
         // }
         $ret=$this->call('getStreetByCode',[
             'STREETCODE'=>$code,
-            'MUNICIPALITY' => //'101700200000651500001'
-            [
-                'CODE' => $muncode
-            ]
+            'MUNICIPALITY' => $municipi->dboid
             
         ],["lower_request"=>true, "lower_response"=>true]);
         // dd($ret);
@@ -127,29 +157,43 @@ class TsystemsVialerService extends TsystemsService
 
 
 
-    public function searchAddresses($addressparts, $muncode=null){
+    public function searchAddresses($streetname, $addressparts=[], $muncode=null){
         if(!$muncode) $muncode=$this->options->municipio_tarragona;
+
+        $municipi=$this->getMunicipiByCodi($muncode);
+        // dd($muncode, $municipi);
 
         // getAddressListByOrderByAdd
         $args=[
-            // 'MUNICIPALITY' => //'101700200000651500001'
-            // [
-            //     'CODE' => $muncode
-            // ]
+            'MUNICIPALITY' => //'101700200000651500001'
+            [
+                'DBOID' => $municipi->dboid
+            ],
+            "ACCESS" => [
+                'STREET' => [
+                    'STNAME'=>$streetname
+                ]
+            ]
         ];
-
-        if(is_string($addressparts)){
-            $args=array_merge($args,[
-                'STNAME'=>$addressparts
-            ]);
-        }else if(is_array($addressparts)){
-            $args=array_merge($args,$addressparts);
+        
+        if($addressparts){
+            foreach($addressparts as $key=>$value){
+                if(in_array(strtoupper($key), ['NUM1','NUM2','DUPLI1','DUPLI2','KM','FBLOCK'])){
+                    $args["ACCESS"][$key] = $value;
+                }else{
+                    $args[$key] = $value;
+                }
+            }
         }
 
+        $args=[
+            "ADDRESS" => $args
+        ];
+        // dump($args);
         $ret=$this->call(
             'getAddressListByOrderByAdd',
             $args,
-            ['request_method_prefix'=>false, 'response_method_prefix'=>false,"lower_request"=>true, "lower_response"=>true]
+            ['request_method_prefix'=>false, 'response_method_prefix'=>false,"lower_request"=>false, "lower_response"=>false]
         );
         
         return TSAddress::cast($ret);
