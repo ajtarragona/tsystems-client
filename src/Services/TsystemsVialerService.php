@@ -149,12 +149,16 @@ class TsystemsVialerService extends TsystemsService
             
         ]);
         // dd($ret);
-        return TSStreet::cast($ret);
+        $ret=TSStreet::cast($ret);
+        if($ret && $ret instanceof TSStreet) $ret=[$ret];
+
+        return $ret;
+        
     }
         
     public function getCarrerByCode($code, $muncode=null){
         if(!$muncode) $muncode=$this->options->municipio_tarragona;
-        $municipi=$this->getMunicipiByCodi($muncode);
+        $municipi=$this->getMunicipiByCode($muncode);
         
         // dd("municipi",$municipi);
         // if($muncode){
@@ -175,7 +179,7 @@ class TsystemsVialerService extends TsystemsService
     public function getAccessos($streetcode, $addressparts=[], $muncode=null){
         if(!$muncode) $muncode=$this->options->municipio_tarragona;
 
-        $municipi=$this->getMunicipiByCodi($muncode);
+        $municipi=$this->getMunicipiByCode($muncode);
         
         $args=[
             "ACCESS" => [
@@ -200,7 +204,7 @@ class TsystemsVialerService extends TsystemsService
     public function getAddresses($streetcode, $addressparts=[], $muncode=null){
         if(!$muncode) $muncode=$this->options->municipio_tarragona;
 
-        $municipi=$this->getMunicipiByCodi($muncode);
+        $municipi=$this->getMunicipiByCode($muncode);
         // dd($muncode, $municipi);
 
         // getAddressListByOrderByAdd
@@ -241,7 +245,7 @@ class TsystemsVialerService extends TsystemsService
     public function searchAddresses($streetname, $addressparts=[], $muncode=null){
         if(!$muncode) $muncode=$this->options->municipio_tarragona;
 
-        $municipi=$this->getMunicipiByCodi($muncode);
+        $municipi=$this->getMunicipiByCode($muncode);
         // dd($muncode, $municipi);
 
         // getAddressListByOrderByAdd
