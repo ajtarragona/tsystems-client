@@ -4,15 +4,12 @@ namespace Ajtarragona\Tsystems\Models;
 
 use Ajtarragona\Tsystems\Traits\WithDBoid;
 
-class TSAddress extends TSModel
+class TSAccess extends TSModel
 {
     use WithDBoid;
     
-    protected static $root_node="address";
+    protected static $root_node="access";
     
-    public $access;
-    public $acronym;
-    public $stname;
     public $num1;
     public $num2;
     public $dupli1;
@@ -26,14 +23,9 @@ class TSAddress extends TSModel
     public $door;
     public $toponymy;
     public $zipcode;
-    public $fulladdress;
-    public $munname;
-    public $provname;
-    public $cntryname;
+  
     
-    protected $model_cast = [
-        'access' => '\Ajtarragona\Tsystems\Models\TSAccess'
-    ];
+
 
 
 }

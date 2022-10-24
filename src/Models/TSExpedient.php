@@ -31,8 +31,15 @@ class TSExpedient extends TSModel
     public $CanalEntrada;
     public $Descripcion;
 
-
+    protected $model_cast = [
+      'documentos' => '\Ajtarragona\Tsystems\Models\TSDocumento'
+  ];
+    
+  
     public function getDocumentos(){
       return TsystemsExpedients::getDocumentosExpedientByID($this->dboid);
+    }
+    public function getTareas(){
+      return TsystemsExpedients::getTareasExpedientByID($this->dboid);
     }
 }

@@ -34,6 +34,18 @@ class TsystemsExpedientsService extends TsystemsService
         }
     }
 
+    public function getExpedientsByDNIConDocumentos($dni){
+        $ret=$this->call('ListaExpbyDNIConDocumentos',[
+            'IDNUMBER'=>$dni,
+        ],['request_method_prefix'=>true, 'response_method_prefix'=>true]);
+        // dump($ret);
+        if(isset($ret->tError)){
+            throw new Exception($ret->tError->DESCRIPTION);
+        }else{
+            return TSExpedient::cast($ret, ['root_node'=>'ListaExpedientes','forcemultiple'=>true]);
+        }
+    }
+
     public function getExpedientByID($id){
         $ret=$this->call('ConsultaEXPByDboid',[
             'DBOID_EXP'=>$id,
@@ -51,6 +63,18 @@ class TsystemsExpedientsService extends TsystemsService
         ],['request_method_prefix'=>true, 'response_method_prefix'=>true]);
        
         return TSDocumento::cast($ret, ['root_node'=>'ListaDocumentos','forcemultiple'=>true]);
+
+        
+    }
+    public function getTareasExpedientByID($id){
+        
+
+        $ret=$this->call('ConsultaTareasTramitbyDboid',[
+            'DBOID_EXP'=>$id,
+        ],['request_method_prefix'=>true, 'response_method_prefix'=>true]);
+       
+        return ($ret);
+        // return TSDocumento::cast($ret, ['root_node'=>'ListaDocumentos','forcemultiple'=>true]);
 
         
     }

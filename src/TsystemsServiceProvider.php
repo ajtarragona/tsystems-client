@@ -27,6 +27,8 @@ class TsystemsServiceProvider extends ServiceProvider
         //publico configuracion         
         $this->publishes([
             __DIR__.'/Config/tsystems.php' => config_path('tsystems.php'),
+            __DIR__.'/Config/tsystems-database.php' => config_path('tsystems-database.php'),
+
         ], 'ajtarragona-tsystems-config');
 
         
@@ -78,6 +80,12 @@ class TsystemsServiceProvider extends ServiceProvider
             $this->mergeConfigFrom(config_path('tsystems.php'), 'tsystems');
         } else {
             $this->mergeConfigFrom(__DIR__.'/Config/tsystems.php', 'tsystems');
+        }
+
+        if (file_exists(config_path('tsystems-database.php'))) {
+            $this->mergeConfigFrom(config_path('tsystems-database.php'), 'database.connections');
+        } else {
+            $this->mergeConfigFrom(__DIR__.'/Config/tsystems-database.php', 'database.connections');
         }
         
     }

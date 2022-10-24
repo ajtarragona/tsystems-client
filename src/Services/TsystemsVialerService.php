@@ -2,6 +2,10 @@
 
 namespace Ajtarragona\Tsystems\Services;
 
+use Ajtarragona\Tsystems\Models\IrisDatabase\MunicipiIris;
+use Ajtarragona\Tsystems\Models\IrisDatabase\PaisIris;
+use Ajtarragona\Tsystems\Models\IrisDatabase\ProvinciaIris;
+use Ajtarragona\Tsystems\Models\TSAccess;
 use Ajtarragona\Tsystems\Models\TSAcronym;
 use Ajtarragona\Tsystems\Models\TSAddress;
 use Ajtarragona\Tsystems\Models\TSCountry;
@@ -20,99 +24,110 @@ class TsystemsVialerService extends TsystemsService
     protected $cache_duration = 86400; //1 day in seconds
     
 
+    public function getCountryByCode($code){
+        return PaisIris::find($code);
+    }
+
+
     public function getCountriesByName($name){
-        $ret=$this->call('getCountryListByStName',[
-            'CNTRYNAME'=>$name
-        ]);
-
-        return TSCountry::cast($ret);
+        return PaisIris::search($name)->get(); 
     }
 
 
-    /** NO funciona */
     public function getAllCountries(){
-        $ret=$this->call('getCountryListByStName',[
-            'CNTRYNAME'=>''
-        ]);
-
-        return TSCountry::cast($ret);
+        return PaisIris::all();
     }
+
 
     public function getAllProvincies($countrycode=null){
-        if(!$countrycode) $countrycode=$this->options->country_spain;
-        $key="tsystems_all_provincies_".$countrycode;
+        return ProvinciaIris::all();
+        // if(!$countrycode) $countrycode=$this->options->country_spain;
+        // $key="tsystems_all_provincies_".$countrycode;
         
-        return Cache::remember($key, $this->cache_duration , function() use ($countrycode){
-            return $this->getProvinciesByName('',$countrycode);
-        });
+        // return Cache::remember($key, $this->cache_duration , function() use ($countrycode){
+        //     return $this->getProvinciesByName('',$countrycode);
+        // });
     }
 
     public function getProvinciesByName($name, $countrycode=null){
-        if(!$countrycode) $countrycode=$this->options->country_spain;
+        return ProvinciaIris::search($name)->get();
+        // if(!$countrycode) $countrycode=$this->options->country_spain;
 
-        $ret=$this->call('getProvinceListByStName',[
-            'PROVNAME'=>$name,
-            'COUNTRY' =>[
-                'CODE' => $countrycode
-            ]
+        // $ret=$this->call('getProvinceListByStName',[
+        //     'PROVNAME'=>$name,
+        //     'COUNTRY' =>[
+        //         'CODE' => $countrycode
+        //     ]
             
-        ]);
-        // dd($ret);
-        return TSProvince::cast($ret);
+        // ]);
+        // // dd($ret);
+        // return TSProvince::cast($ret);
     }
 
     public function getProvinciaByCode($code, $countrycode=null){
-        $all=$this->getAllProvincies($countrycode);
-        //no existe el metodo, recojo todos los municipios y filtro la coleccion por codigo
-        return collect($all)->filter(function($provincia) use($code){
-            // dump($municipi);
-            // if($provincia->code == "".$code) dump($provincia);
-            return $provincia->code == "".$code; 
-        })->first();
+        return ProvinciaIris::find($code);
+        // $all=$this->getAllProvincies($countrycode);
+        
+        // //no existe el metodo, recojo todos los municipios y filtro la coleccion por codigo
+        // return collect($all)->filter(function($provincia) use($code){
+        //     // dump($municipi);
+        //     // if($provincia->code == "".$code) dump($provincia);
+        //     return $provincia->code == "".$code; 
+        // })->first();
     }
 
 
     public function getAllMunicipis($provcode=null){
         if(!$provcode) $provcode=$this->options->provincia_tarragona;
-        $key="tsystems_all_municipis_".$provcode;
+        return MunicipiIris::ofProvincia($provcode)->get();
         
-        return Cache::remember($key, $this->cache_duration , function() use ($provcode){
-            return $this->getMunicipisByName('',$provcode);
-        });
+        
+        // if(!$provcode) $provcode=$this->options->provincia_tarragona;
+        // $key="tsystems_all_municipis_".$provcode;
+        
+        // return Cache::remember($key, $this->cache_duration , function() use ($provcode){
+        //     return $this->getMunicipisByName('',$provcode);
+        // });
     }
 
 
     public function getMunicipisByName($name, $provcode=null){
-        if(!$provcode) $provcode=$this->options->provincia_tarragona;
-        
-        $provincia=$this->getProvinciaByCode($provcode);
-        // dd($provcode);
-        $ret=$this->call('getMuncpalityListByStName',[
-            'MUNNAME'=>$name,
-            'PROVINCE' =>[
-                'DBOID' => $provincia->dboid
-            ]
-            
-        ]);
-        //TODO, parece que no pilla el codigo de provincia. Devuelve todos los municipios
 
-        return TSMunicipality::cast($ret);
+        if(!$provcode) $provcode=$this->options->provincia_tarragona;
+        return MunicipiIris::ofProvincia($provcode)->search($name)->get();
+        // if(!$provcode) $provcode=$this->options->provincia_tarragona;
+        
+        // $provincia=$this->getProvinciaByCode($provcode);
+        // // dd($provcode);
+        // $ret=$this->call('getMuncpalityListByStName',[
+        //     'MUNNAME'=>$name,
+        //     'PROVINCE' =>[
+        //         'DBOID' => $provincia->dboid
+        //     ]
+            
+        // ]);
+        // //TODO, parece que no pilla el codigo de provincia. Devuelve todos los municipios
+
+        // return TSMunicipality::cast($ret);
     }
 
 
-    public function getMunicipiByCodi($code, $provcode=null){
-        if(!$provcode) $provcode=$this->options->provincia_tarragona;
+    public function getMunicipiByCode($code, $provcode=null){
+        if(!$provcode)  $provcode=$this->options->provincia_tarragona;
+        return MunicipiIris::ofProvincia($provcode)->where('CODE',$code)->first();
+        
+        // if(!$provcode) $provcode=$this->options->provincia_tarragona;
 
-        // dd($provcode);
-        $all=$this->getAllMunicipis($provcode);
-        // dd($all);
-        // dd($code, collect($all)->count());
-        //no existe el metodo, recojo todos los municipios y filtro la coleccion por codigo
-        return collect($all)->filter(function($municipi) use($code){
-            // dump($municipi);
-            // if($municipi->code == "".$code) dump($municipi);
-            return $municipi->code == "".$code; 
-        })->first();
+        // // dd($provcode);
+        // $all=$this->getAllMunicipis($provcode);
+        // // dd($all);
+        // // dd($code, collect($all)->count());
+        // //no existe el metodo, recojo todos los municipios y filtro la coleccion por codigo
+        // return collect($all)->filter(function($municipi) use($code){
+        //     // dump($municipi);
+        //     // if($municipi->code == "".$code) dump($municipi);
+        //     return $municipi->code == "".$code; 
+        // })->first();
     }
 
     public function getAcronymList(){
@@ -157,6 +172,72 @@ class TsystemsVialerService extends TsystemsService
 
 
 
+    public function getAccessos($streetcode, $addressparts=[], $muncode=null){
+        if(!$muncode) $muncode=$this->options->municipio_tarragona;
+
+        $municipi=$this->getMunicipiByCodi($muncode);
+        
+        $args=[
+            "ACCESS" => [
+                'DBOID_STREET'=>$streetcode
+            ]
+        ];
+
+        if($addressparts){
+            $args["ACCESS"] = array_merge($args["ACCESS"], $addressparts);
+        }
+        $ret=$this->call(
+            'getAccesListByAccess',
+            $args,
+            ['request_method_prefix'=>false, 'response_method_prefix'=>false,"lower_request"=>false, "lower_response"=>false]
+        );
+        
+        return TSAccess::cast($ret);
+    }
+
+
+
+    public function getAddresses($streetcode, $addressparts=[], $muncode=null){
+        if(!$muncode) $muncode=$this->options->municipio_tarragona;
+
+        $municipi=$this->getMunicipiByCodi($muncode);
+        // dd($muncode, $municipi);
+
+        // getAddressListByOrderByAdd
+        $args=[
+            'MUNICIPALITY' => //'101700200000651500001'
+            [
+                'DBOID' => $municipi->dboid
+            ],
+            "ACCESS" => [
+                'STREET' => [
+                    'DBOID'=>$streetcode
+                ]
+            ]
+        ];
+        
+        if($addressparts){
+            foreach($addressparts as $key=>$value){
+                if(in_array(strtoupper($key), ['NUM1','NUM2','DUPLI1','DUPLI2','KM','FBLOCK'])){
+                    $args["ACCESS"][$key] = $value;
+                }else{
+                    $args[$key] = $value;
+                }
+            }
+        }
+
+        $args=[
+            "ADDRESS" => $args
+        ];
+        // dump($args);
+        $ret=$this->call(
+            'getAddressListByOrderByAdd',
+            $args,
+            ['request_method_prefix'=>false, 'response_method_prefix'=>false,"lower_request"=>false, "lower_response"=>false]
+        );
+        
+        return TSAddress::cast($ret);
+    }
     public function searchAddresses($streetname, $addressparts=[], $muncode=null){
         if(!$muncode) $muncode=$this->options->municipio_tarragona;
 

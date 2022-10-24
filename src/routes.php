@@ -23,6 +23,6 @@ Route::group(['prefix' => 'ajtarragona/tsystems','middleware' => ['tsystems-back
 	Route::post('/expedients', 'Ajtarragona\Tsystems\Controllers\TsystemsExpedientsController@search')->name('tsystems.expedients.search');
 	Route::get('/expedients/{id}', 'Ajtarragona\Tsystems\Controllers\TsystemsExpedientsController@show')->name('tsystems.expedients.show');
 	
-	Route::get('/registre', 'Ajtarragona\Tsystems\Controllers\TsystemsRegistreController@home')->name('tsystems.registre.home');
+	// Route::get('/registre', 'Ajtarragona\Tsystems\Controllers\TsystemsRegistreController@home')->name('tsystems.registre.home');
 });
 
