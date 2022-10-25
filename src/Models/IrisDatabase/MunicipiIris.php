@@ -18,7 +18,7 @@ class MunicipiIris extends Model
     public $dates = ["PROC"];
    
     public $sortable = [
-        "PROC", "CODE","NAME","CODPROV","NOMPROV"
+         "DBOID", "PROC", "CODE","NAME","CODPROV","NOMPROV"
     ];
  
       

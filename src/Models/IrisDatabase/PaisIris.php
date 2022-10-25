@@ -18,7 +18,7 @@ class PaisIris extends Model
     public $dates = ["PROC"];
    
     public $sortable = [
-        "PROC", "CODE","NAME"
+        "DBOID", "PROC", "CODE","NAME"
     ];
  
  

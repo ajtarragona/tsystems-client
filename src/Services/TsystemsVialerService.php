@@ -114,7 +114,7 @@ class TsystemsVialerService extends TsystemsService
 
     public function getMunicipiByCode($code, $provcode=null){
         if(!$provcode)  $provcode=$this->options->provincia_tarragona;
-        return MunicipiIris::ofProvincia($provcode)->where('CODE',$code)->first();
+        return MunicipiIris::ofProvincia($provcode)->where('code',$code)->first();
         
         // if(!$provcode) $provcode=$this->options->provincia_tarragona;
 
@@ -158,8 +158,9 @@ class TsystemsVialerService extends TsystemsService
         
     public function getCarrerByCode($code, $muncode=null){
         if(!$muncode) $muncode=$this->options->municipio_tarragona;
+        // dump($muncode);
         $municipi=$this->getMunicipiByCode($muncode);
-        
+        // dump($municipi);
         // dd("municipi",$municipi);
         // if($muncode){
         //     $municipi= self::getMu

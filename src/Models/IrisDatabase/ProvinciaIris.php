@@ -18,7 +18,7 @@ class ProvinciaIris extends Model
     public $dates = ["PROC"];
    
     public $sortable = [
-        "PROC", "CODE","NAME","CODREG","NOMREG"
+       "DBOID","PROC", "CODE","NAME","CODREG","NOMREG"
     ];
  
  

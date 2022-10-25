@@ -15,7 +15,7 @@
             'strict' => true,
             'engine' => null,
             'options'   => array(
-                PDO::ATTR_CASE => PDO::CASE_NATURAL
+                PDO::ATTR_CASE => PDO::CASE_LOWER
             ),
         ]
     ];
