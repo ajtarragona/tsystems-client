@@ -138,18 +138,20 @@ class TsystemsVialerService extends TsystemsService
         return TSAcronym::cast($ret);
     }
 
-    public function getCarrersByName($name, $muncode=null){
+    public function getCarrersByName($name, $muncode=null, $pagina=1){
         if(!$muncode) $muncode=$this->options->municipio_tarragona;
-        
+    
         $ret=$this->call('getStreetListByStName',[
             'STNAME'=>$name,
             'MUNICIPALITY' =>[
                 'CODE' => $muncode
-            ]
-            
+            ],
+           'PAGENUMBER'=> $pagina
         ]);
+
         // dd($ret);
         $ret=TSStreet::cast($ret);
+
         if($ret && $ret instanceof TSStreet) $ret=[$ret];
 
         return $ret;
