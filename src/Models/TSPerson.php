@@ -38,24 +38,77 @@ class TSPerson extends TSModel
         return TsystemsTercers::addAddressToPerson($this->dboid, $address,$addresstype);
     }
 
-    public function addPhone($phone, $phonetype=null){
+    public function setPhone($phone, $phonetype=null){
         return TsystemsTercers::addPhoneToPerson($this->dboid, $phone,$phonetype);
     }
-    public function addEmail($email, $emailtype=null){
-        return TsystemsTercers::addEmailToPerson($this->dboid, $email,$emailtype);
+    public function setPhoneParticular($phone){
+        return $this->setPhone($phone, TSPersContact::TIPUS_PHONE_PARTICULAR);
     }
-    public function getEmails(){
+    public function setPhoneTrabajo($phone){
+        return $this->setPhone($phone, TSPersContact::TIPUS_PHONE_TRABAJO);
+    }
+    public function setPhoneMobil($phone){
+        return $this->setPhone($phone, TSPersContact::TIPUS_PHONE_MOBIL);
+    }
+    public function setPhoneOtros($phone){
+        return $this->setPhone($phone, TSPersContact::TIPUS_PHONE_OTROS);
+    }
+
+
+    public function setEmail($email, $type=null){
+        return TsystemsTercers::addEmailToPerson($this->dboid, $email, $type);
+    }
+    public function setEmailParticular($phone){
+        return $this->setEmail($phone, TSPersContact::TIPUS_EMAIL_PARTICULAR);
+    }
+    public function setEmailTrabajo($phone){
+        return $this->setEmail($phone, TSPersContact::TIPUS_EMAIL_TRABAJO);
+    }
+
+
+    protected function getMedioContacto($tipus, $single=false){
         if(!$this->perscontacts) return [];
-        return collect($this->perscontacts)->filter(function($contact){
-            return in_array(intval($contact->code), TSPersContact::TIPUS_EMAIL);
-        })->pluck('value')->toArray();
+        if(!is_array($tipus)) $tipus=[$tipus];
+
+        $ret=collect($this->perscontacts)->filter(function($contact) use ($tipus){
+            return in_array(intval($contact->code), $tipus);
+        });
+
+        if($single) return $ret->first();
+        else return $ret->toArray();
+
+    }
+
+    public function getEmails(){
+       return $this->getMedioContacto(TSPersContact::TIPUS_EMAIL);
     }
 
     public function getPhones(){
-        if(!$this->perscontacts) return [];
-        return collect($this->perscontacts)->filter(function($contact){
-            return in_array(intval($contact->code), TSPersContact::TIPUS_PHONE);
-        })->pluck('value')->toArray();
+        return $this->getMedioContacto(TSPersContact::TIPUS_PHONE);
+    }
+
+    public function getEmailParticular(){
+        return $this->getMedioContacto(TSPersContact::TIPUS_EMAIL_PARTICULAR, true)->value ??null;
+    }
+
+    public function getEmailTrabajo(){
+        return $this->getMedioContacto(TSPersContact::TIPUS_EMAIL_TRABAJO, true)->value ??null;
+    }
+
+    public function getPhoneParticular(){
+        return $this->getMedioContacto(TSPersContact::TIPUS_PHONE_PARTICULAR, true)->value ??null;
+    }
+
+    public function getPhoneTrabajo(){
+        return $this->getMedioContacto(TSPersContact::TIPUS_PHONE_TRABAJO, true)->value ??null;
+    }
+
+    public function getPhoneMobil(){
+        return $this->getMedioContacto(TSPersContact::TIPUS_PHONE_MOBIL, true)->value ??null;
+    }
+
+    public function getPhoneOtro(){
+        return $this->getMedioContacto(TSPersContact::TIPUS_PHONE_OTROS, true)->value ??null;
     }
     
 }
