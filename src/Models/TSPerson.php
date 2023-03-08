@@ -24,16 +24,38 @@ class TSPerson extends TSModel
     public $persontype;
 
     public $addresses;
+    public $perscontacts;
 
 
     protected $model_cast = [
-        'addresses' => '\Ajtarragona\Tsystems\Models\TSAddress'
+        'addresses' => '\Ajtarragona\Tsystems\Models\TSAddress',
+        'perscontacts' => '\Ajtarragona\Tsystems\Models\TSPersContact'
     ];
 
+   
 
     public function addAdreca($address, $addresstype="API"){
         return TsystemsTercers::addAddressToPerson($this->dboid, $address,$addresstype);
     }
-    
+
+    public function addPhone($phone, $phonetype=null){
+        return TsystemsTercers::addPhoneToPerson($this->dboid, $phone,$phonetype);
+    }
+    public function addEmail($email, $emailtype=null){
+        return TsystemsTercers::addEmailToPerson($this->dboid, $email,$emailtype);
+    }
+    public function getEmails(){
+        if(!$this->perscontacts) return [];
+        return collect($this->perscontacts)->filter(function($contact){
+            return in_array(intval($contact->code), TSPersContact::TIPUS_EMAIL);
+        })->pluck('value')->toArray();
+    }
+
+    public function getPhones(){
+        if(!$this->perscontacts) return [];
+        return collect($this->perscontacts)->filter(function($contact){
+            return in_array(intval($contact->code), TSPersContact::TIPUS_PHONE);
+        })->pluck('value')->toArray();
+    }
     
 }

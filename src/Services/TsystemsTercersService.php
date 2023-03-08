@@ -5,6 +5,7 @@ namespace Ajtarragona\Tsystems\Services;
 use Ajtarragona\Tsystems\Facades\TsystemsVialer;
 use Ajtarragona\Tsystems\Helpers\TSHelpers;
 use Ajtarragona\Tsystems\Models\TSAddress;
+use Ajtarragona\Tsystems\Models\TSPersContact;
 use Ajtarragona\Tsystems\Models\TSPerson;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -144,6 +145,57 @@ class TsystemsTercersService extends TsystemsService
     public function addAddressToPerson($person_dboid, $address=[], $addresstype="API"){
         
         return TsystemsVialer::createAddress($person_dboid, $address, $addresstype);
+    }
+
+    
+    /**
+     * addPhoneToPerson
+     * Añade un teléfono a la persona 
+     *
+     * @param  mixed $dboid
+     * @param  mixed $phone
+     * @param  mixed $phonetype
+     * @return void
+     */
+    public function addPhoneToPerson($dboid, $phone, $phonetype=null){
+        if(!$phonetype) $phonetype=array_first(TSPersContact::TIPUS_PHONE);
+        $params=[
+            'PERSON_DBOID' => $dboid,
+            'WAYCODE' => $phonetype,
+            'WAYVALUE' => $phone,
+            'ISDEFAULT' => 'F'
+        ];
+        $ret=$this->call('anadirMedioContacto', $params ,["lower_request"=>false,"lower_response"=>false]);
+        // dd($ret);
+        $contact=TSPersContact::cast($ret);
+        $contact->waycode=$phonetype;
+        $contact->wayvalue=$phone;
+        return $contact;
+    }
+    
+    /**
+     * addEmailToPerson
+     * Añade un email a la persona
+     *
+     * @param  mixed $dboid
+     * @param  mixed $email
+     * @param  mixed $emailtype
+     * @return void
+     */
+    public function addEmailToPerson($dboid, $email, $emailtype=null){
+        if(!$emailtype) $emailtype=array_first(TSPersContact::TIPUS_EMAIL);
+        $params=[
+            'PERSON_DBOID' => $dboid,
+            'WAYCODE' => $emailtype,
+            'WAYVALUE' => $email,
+            'ISDEFAULT' => 'F'
+        ];
+        $ret=$this->call('anadirMedioContacto', $params ,["lower_request"=>false,"lower_response"=>false]);
+        // dd($ret);
+        $contact=TSPersContact::cast($ret);
+        $contact->waycode=$emailtype;
+        $contact->wayvalue=$email;
+        return $contact;
     }
 
 }
