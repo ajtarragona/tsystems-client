@@ -69,13 +69,18 @@ class TSPerson extends TSModel
     protected function getMedioContacto($tipus, $single=false){
         if(!$this->perscontacts) return [];
         if(!is_array($tipus)) $tipus=[$tipus];
+        // dump($this->perscontacts);
+        if($this->perscontacts){
+            //si solo hay uno
+            if($this->perscontacts instanceof TSPersContact)  $this->perscontacts=[$this->perscontacts];
 
-        $ret=collect($this->perscontacts)->filter(function($contact) use ($tipus){
-            return in_array(intval($contact->code), $tipus);
-        });
-
-        if($single) return $ret->first();
-        else return $ret->toArray();
+            $ret=collect($this->perscontacts)->filter(function($contact) use ($tipus){
+                return $contact && in_array(intval($contact->code), $tipus);
+            });
+            if($single) return $ret->first();
+            else return $ret->toArray();
+        }
+        return null;
 
     }
 
