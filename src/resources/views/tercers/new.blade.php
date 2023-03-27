@@ -10,7 +10,7 @@
 
     @breadcrumb([
     	'items'=> [
-    		['name'=>__("Tercers"), "url"=>route('accede.tercer.search')],
+    		['name'=>("Tercers"), "url"=>route('accede.tercer.search')],
     		['name'=> "Nou tercer"]
     	]
 

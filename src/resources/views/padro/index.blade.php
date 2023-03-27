@@ -8,8 +8,8 @@
 @section('breadcrumb')
     @breadcrumb([
     	'items'=> [
-    		['name'=>__("Home"), 'route'=> 'tsystems.home'],
-    		['name'=>__("Padró")]
+    		['name'=>("Home"), 'route'=> 'tsystems.home'],
+    		['name'=>("Padró")]
     	]
     ])
 	

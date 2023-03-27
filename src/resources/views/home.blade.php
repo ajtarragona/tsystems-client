@@ -9,7 +9,7 @@
 @section('breadcrumb')
     @breadcrumb([
     	'items'=> [
-    		['name'=>__("Home")]
+    		['name'=>("Home")]
     	]
     ])
 @endsection
@@ -22,12 +22,20 @@
 
 @section('body')
 	<div class="pt-3">
-		<a href="{{ route('tsystems.tercers.home')}}">
-			@lang('Tercers')
-		</a>
-		<a href="{{ route('tsystems.padro.home')}}">
-			@lang('Padró')
-		</a>
+		<ul class="list-group">
+			<a class="list-group-item" href="{{ route('tsystems.tercers.home')}}">
+				@icon('user') @lang('Tercers')
+			</a>
+			<a class="list-group-item" href="{{ route('tsystems.vialer.home')}}">
+				@icon('road') @lang('Vialer')
+			</a>
+			<a class="list-group-item" href="{{ route('tsystems.padro.home')}}">
+				@icon('walking') @lang('Padró')
+			</a>
+			<a class="list-group-item" href="{{ route('tsystems.expedients.home')}}">
+				@icon('folder') @lang('Expedients')
+			</a>
+		</ul>
 	</div>
 @endsection
 

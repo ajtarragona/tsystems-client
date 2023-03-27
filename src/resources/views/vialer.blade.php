@@ -9,7 +9,7 @@
 @section('breadcrumb')
     @breadcrumb([
     	'items'=> [
-    		['name'=>__("Vialer")]
+    		['name'=>("Vialer")]
     	]
     ])
 @endsection

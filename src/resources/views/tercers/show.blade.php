@@ -9,9 +9,9 @@
 
     @breadcrumb([
     	'items'=> [
-    		['name'=>__("Home"), 'route'=> 'tsystems.home'],
-    		['name'=>__("Tercers"), 'route'=> 'tsystems.tercers.home'],
-    		['name'=> $tercer ? __("Tercer :id", ['id'=>$tercer->dboid]) : __('No tercer') ]
+    		['name'=>("Home"), 'route'=> 'tsystems.home'],
+    		['name'=>("Tercers"), 'route'=> 'tsystems.tercers.home'],
+    		['name'=> $tercer ? __("Tercer :id", ['id'=>$tercer->dboid]) : ('No tercer') ]
     	]
 
     ])

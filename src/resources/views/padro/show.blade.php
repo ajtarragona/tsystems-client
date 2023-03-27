@@ -9,9 +9,9 @@
 
     @breadcrumb([
     	'items'=> [
-    		['name'=>__("Home"), 'route'=> 'tsystems.home'],
-    		['name'=>__("Padró"), 'route'=> 'tsystems.padro.home'],
-    		['name'=> $empadronat ? __(":id : :name", ['id'=>$empadronat->getDni(), 'name'=>$empadronat->getNomComplet()]) : __('No Empadronat') ]
+    		['name'=>("Home"), 'route'=> 'tsystems.home'],
+    		['name'=>("Padró"), 'route'=> 'tsystems.padro.home'],
+    		['name'=> $empadronat ? __(":id : :name", ['id'=>$empadronat->getDni(), 'name'=>$empadronat->getNomComplet()]) : ('No Empadronat') ]
     	]
 
     ])
@@ -29,7 +29,7 @@
 		'method'=>'DELETE',
 		'class' => 'd-inline-block',
 		'action'=>route('accede.tercer.delete',[$tercer->codigoTercero]),
-		'data'=>['confirm'=>__('S&apos;esborrarà definitivament el tercer. N&apos;estàs segur?')]
+		'data'=>['confirm'=>('S&apos;esborrarà definitivament el tercer. N&apos;estàs segur?')]
 	])
 		@button(['type'=>'submit','size'=>'sm','style'=>'danger']) @icon('disk') @icon('trash') Eliminar tercer @endbutton
 	@endform --}}

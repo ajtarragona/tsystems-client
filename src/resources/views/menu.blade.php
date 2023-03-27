@@ -7,36 +7,36 @@
 	'fullwidth'=>true,
 	"items"=> [
 		[
-			"title" => __('Tercers' ) ,
+			"title" => 'Tercers'  ,
 			"icon" => 'user',
 			"route" => 'tsystems.tercers.home',
 			"activeroute" => 'tsystems.tercers.*'
 
 		],
 		[
-			"title" => __('Vialer' ) ,
+			"title" => ('Vialer' ) ,
 			"icon" => 'road',
 			"route" => 'tsystems.vialer.home',
 			"activeroute" => 'tsystems.vialer.*'
 		],
 		[
-			"title" => __('Padró' ) ,
+			"title" => ('Padró' ) ,
 			"icon" => 'walking',
 			"route" => 'tsystems.padro.home',
 			"activeroute" => 'tsystems.padro.*'
 		],
 		[
-			"title" => __('Expedients' ) ,
+			"title" => ('Expedients' ) ,
 			"icon" => 'folder',
 			"route" => 'tsystems.expedients.home',
 			"activeroute" => 'tsystems.expedients.*'
 		],
-		[
-			"title" => __('Registre' ) ,
-			"icon" => 'users',
-			"route" => 'tsystems.registre.home',
-			"activeroute" => 'tsystems.registre.*'
-		],
+		// [
+		// 	"title" => ('Registre' ) ,
+		// 	"icon" => 'users',
+		// 	"route" => 'tsystems.registre.home',
+		// 	"activeroute" => 'tsystems.registre.*'
+		// ],
 	]
 	
 ])
