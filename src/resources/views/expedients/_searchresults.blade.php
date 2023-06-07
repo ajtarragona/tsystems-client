@@ -6,6 +6,11 @@
 			<table class="table table-striped table-sm mt-3">
 				<thead>
 					<th>DBOID</th>
+					<th>Núm.</th>
+					<th>Número</th>
+					<th>Any</th>
+					<th>Ident</th>
+					<th>Alta</th>
 					
 				</thead>
 				<tbody>
@@ -13,6 +18,11 @@
 
 						<tr>
 							<td><a href="{{ route('tsystems.expedients.show',[$expedient->dboid]) }}">{{ $expedient->dboid }}</a></td>
+							<td>{{ $expedient->NumeroFormateado }}</td>
+							<td>{{ $expedient->Numero }}</td>
+							<td>{{ $expedient->Ejercicio }}</td>
+							<td>{{ $expedient->Identificador }}</td>
+							<td>{{ $expedient->FechaAlta }}</td>
 							
 						</tr>
 					@endforeach

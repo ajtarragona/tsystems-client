@@ -1,3 +1,4 @@
+{{-- @dump($adreca) --}}
 <tr>
     <td>{{ $adreca->dboid }}</td>
     <td>{{ $adreca->fulladdress }}</td>

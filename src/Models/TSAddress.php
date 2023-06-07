@@ -27,10 +27,23 @@ class TSAddress extends TSModel
     public $toponymy;
     public $zipcode;
     public $fulladdress;
+
+    //los nombres
     public $munname;
     public $provname;
     public $cntryname;
     
+    //los codigos INE
+    public $cntrycode;
+    public $provcode;
+    public $muncode;
+
+    //los DBOID
+    public $muncplty;
+    public $province;
+    public $country;
+
+
     protected $model_cast = [
         'access' => '\Ajtarragona\Tsystems\Models\TSAccess'
     ];

@@ -28,11 +28,17 @@
 			
 			@include('tsystems::expedients._filterfields')
 				
-				
+			
 
 		@endcol
 		@col(['size'=>7])
+			@if(isset($error))
+				@alert(['type'=>'danger'])
+				<pre>{!! nl2br($error) !!}</pre>
+				@endalert
+			@endif
 			@include('tsystems::expedients._searchresults')
+
 		@endcol
 	@endrow
 

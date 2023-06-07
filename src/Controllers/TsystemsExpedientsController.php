@@ -15,6 +15,7 @@ class TsystemsExpedientsController extends Controller
    
 	protected $defaultfilter=[
 		"nom" => "",
+		"dni" => "",
 	]; 
 
     protected static $pagesize=10;
@@ -36,11 +37,14 @@ class TsystemsExpedientsController extends Controller
             
             
 // dd($tercersfilter);
-            if($expedientsfilter["nom"]){
-				$expedients=TsystemsExpedients::searchExpedients($expedientsfilter["nom"]);
+            if($expedientsfilter["nom"]??null){
+				$expedient=TsystemsExpedients::getExpedientByNumero($expedientsfilter["nom"]);
+				$expedients[]=$expedient;
+			}else if($expedientsfilter["dni"]??null){
+				$expedients=TsystemsExpedients::getExpedientsByDNI($expedientsfilter["dni"]);
 			}
 			
-		
+			
 
             // $tercers = new Paginator($tercers, 5, $tercersfilter["page"] ?? 1);
                 
@@ -49,11 +53,15 @@ class TsystemsExpedientsController extends Controller
 			return view("tsystems::expedients.index",$params);
 
 		}catch(TsystemsNoResultsException | TsystemsOperationException $e){
-			return view("tsystems::expedients.index",$params);
+			$error=$e->getMessage();
+			// return view("tsystems::error",compact('error'));
+
+			return view("tsystems::expedients.index",compact('error'));
 		}catch(Exception $e){
 			// dd($e);
 			$error=$e->getMessage();
-			return view("tsystems::error",compact('error'));
+			return view("tsystems::expedients.index",compact('error'));
+			// return view("tsystems::error",compact('error'));
 		}
 	}
 
