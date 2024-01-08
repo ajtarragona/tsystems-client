@@ -79,7 +79,7 @@ class TsystemsVialerService extends TsystemsService
 
     public function getAllMunicipis($provcode=null){
         if(!$provcode) $provcode=$this->options->provincia_tarragona;
-        return MunicipiIris::ofProvincia($provcode)->get();
+        return MunicipiIris::ofProvincia($provcode)->notExcluded()->get();
         
         
         // if(!$provcode) $provcode=$this->options->provincia_tarragona;
@@ -94,7 +94,7 @@ class TsystemsVialerService extends TsystemsService
     public function getMunicipisByName($name, $provcode=null){
 
         if(!$provcode) $provcode=$this->options->provincia_tarragona;
-        return MunicipiIris::ofProvincia($provcode)->search($name)->get();
+        return MunicipiIris::ofProvincia($provcode)->notExcluded()->search($name)->get();
         // if(!$provcode) $provcode=$this->options->provincia_tarragona;
         
         // $provincia=$this->getProvinciaByCode($provcode);
@@ -114,7 +114,7 @@ class TsystemsVialerService extends TsystemsService
 
     public function getMunicipiByCode($code, $provcode=null){
         if(!$provcode)  $provcode=$this->options->provincia_tarragona;
-        return MunicipiIris::ofProvincia($provcode)->where('code',$code)->first();
+        return MunicipiIris::ofProvincia($provcode)->notExcluded()->where('code',$code)->first();
         
         // if(!$provcode) $provcode=$this->options->provincia_tarragona;
 

@@ -33,5 +33,10 @@ class MunicipiIris extends Model
    public function scopeOfProvincia( $query, $codprov){
       $query->where('CODPROV',$codprov);
    }
-
+   public function scopeNotExcluded( $query){
+      $excluded=config("tsystems.excluded_municipios",[]);
+      if($excluded){
+         $query->whereNotIn('CODE',$excluded);
+      }
+   }
 }

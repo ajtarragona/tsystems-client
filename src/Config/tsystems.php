@@ -10,6 +10,7 @@ return [
 	"country_spain"=> 108,
 	"provincia_tarragona" => 43,
 	"municipio_tarragona" => 148,
+	"excluded_municipios" => [999],
 	"backend" => env('TSYSTEMS_BACKEND',true),
 ];
 
