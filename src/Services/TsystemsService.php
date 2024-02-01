@@ -118,25 +118,30 @@ class TsystemsService
 
         $token =  $this->login();
         // dump($token);
-        // $hash = $this->getHash($method, $token, $arguments);
-		// return $this->returnCached($hash, function() use ($arguments, $token){
+        $hash = $this->getHash($method, $token, $arguments);
+		return $this->returnCached($hash, function() use ($arguments, $token, $method, $options){
 
             $this->debug("CALLING doOperationTAO:" . $method);
             $this->debug("With arguments:");
             $this->debug($arguments);
 
 
-            $data=TSHelpers::to_xml([
-                $method => [
-                    $this->requestName($method, $options) =>$arguments
-                ]
-            ],[
+            if($options["request_method_container"]??true){
+                $arguments= [
+                    $method => [
+                        $this->requestName($method, $options) => $arguments
+                    ]
+                ];
+            }
+
+            // dd($arguments, $options);
+            $data=TSHelpers::to_xml($arguments,[
                 "root_node"=> static::dataRootNodeName(), 
                 "header"=>true,
                 "xmlns"=>static::$xml_ns,
             ]);
             
-            // dd($data);
+            // dump($data);
 
             $data=str_replace("\n","",$data);
 
@@ -148,13 +153,14 @@ class TsystemsService
                 "data"=>$data,
             ],["root_node"=>"taoServiceRequest", "header"=>false]);
             
+            // dd($xml);
             $client=$this->client();
 
 
             $xmltag = new SoapVar("<xmlIn><![CDATA[{$xml}]]></xmlIn>", XSD_ANYXML);
             $tokentag = new SoapVar("<token>{$token}</token>", XSD_ANYXML);
            
-            
+            // dump($xmltag);
            
             $results=$client->doOperationTAO([
                 'xmlIn' => $xmltag,
@@ -175,7 +181,7 @@ class TsystemsService
             return $this->parseResults($method,$results,$options);
             
             
-        // });
+        });
          
         
     }
@@ -210,20 +216,31 @@ class TsystemsService
            throw new TsystemsOperationException($results->doOperationTAOReturn);
        }
        $response=TSHelpers::from_xml($results->doOperationTAOReturn);
-       
+    //    dd($response);
        
             if(isset($response->taoServiceResponse) && $response->taoServiceResponse->resultCode =="OK"){
                 // dump($response->taoServiceResponse->data);
                 $data=TSHelpers::from_xml($response->taoServiceResponse->data->{"@value"}); //, 'SimpleXMLElement', LIBXML_NOCDATA);
                 // dd($data);
                 TSHelpers::removeNamespacesKeys($data);
+                // dd($data);
                 // dd($data, static::dataRootNodeName(), $method, $this->responseName($method, $options));
-                if(!isset($data->{static::dataRootNodeName()}->{"".$method}->{ $this->responseName($method, $options)  })){
+                // dd(static::dataRootNodeName(), $method, $this->responseName($method, $options));
+                $hasRootNode=false;
+                if($options["response_method_container"]??true){
+                    $hasRootNode = isset($data->{static::dataRootNodeName()}->{"".$method}->{ $this->responseName($method, $options)  });
+                }else{
+                    $hasRootNode = isset($data->{static::dataRootNodeName()});
+                }
+
+                if(!$hasRootNode){
                     throw new TsystemsOperationException("Error parsing response");
                 }else{
-                    // dd(static::dataRootNodeName());
-                    $response=$data->{static::dataRootNodeName()}->{"".$method}->{ $this->responseName($method, $options) };
-                    // dump($response);
+
+                    
+                    
+                    $response= ($options["response_method_container"]??true) ? ($data->{static::dataRootNodeName()}->{"".$method}->{ $this->responseName($method, $options) }) : $data->{static::dataRootNodeName()} ;
+                    // dd($response);
                     if($response===""){
                         throw new TsystemsNoResultsException();
                     }else{

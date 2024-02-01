@@ -28,3 +28,9 @@ if (! function_exists('ts_rdpost')) {
 		return new \Ajtarragona\Tsystems\Services\TsystemsRdpostService($options);
 	}
 }
+
+if (! function_exists('ts_registre')) {
+	function ts_registre($options=false){
+		return new \Ajtarragona\Tsystems\Services\TsystemsRegistreService($options);
+	}
+}

@@ -79,6 +79,7 @@ class TsystemsVialerService extends TsystemsService
 
     public function getAllMunicipis($provcode=null){
         if(!$provcode) $provcode=$this->options->provincia_tarragona;
+        // dd($this->options->provincia_tarragona,$provcode);
         return MunicipiIris::ofProvincia($provcode)->notExcluded()->get();
         
         

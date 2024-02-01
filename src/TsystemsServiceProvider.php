@@ -69,6 +69,10 @@ class TsystemsServiceProvider extends ServiceProvider
             return new \Ajtarragona\Tsystems\Services\TsystemsRdpostService;
         });
 
+        $this->app->bind('tsystems-registre', function(){
+            return new \Ajtarragona\Tsystems\Services\TsystemsRegistreService;
+        });
+
         //helpers
         foreach (glob(__DIR__.'/Helpers/*.php') as $filename){
             require_once($filename);

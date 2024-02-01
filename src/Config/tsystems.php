@@ -12,5 +12,7 @@ return [
 	"municipio_tarragona" => 148,
 	"excluded_municipios" => [999],
 	"backend" => env('TSYSTEMS_BACKEND',true),
+	'book_in_id' => env('TSYSTEMS_BOOK_IN',  '980000000000383388888'),
+	'book_out_id' => env('TSYSTEMS_BOOK_OUT','980000000000383588888'),
 ];
 
