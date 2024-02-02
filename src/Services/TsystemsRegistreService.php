@@ -2,6 +2,7 @@
 
 namespace Ajtarragona\Tsystems\Services;
 
+use Ajtarragona\Tsystems\Exceptions\TsystemsNoResultsException;
 use Ajtarragona\Tsystems\Helpers\A2XML;
 use Ajtarragona\Tsystems\Helpers\Array2XML;
 use Ajtarragona\Tsystems\Helpers\TSHelpers;
@@ -28,8 +29,13 @@ class TsystemsRegistreService extends TsystemsService
     
 
  
+    public function getLlibreId($llibre){
+       return (strtoupper($llibre)=="E" ) ? config('tsystems.book_in_id') : config('tsystems.book_out_id');
+    }
+
     public function getAnnotationByNIF($nif, $llibre='E'){
-        $book_id = (strtoupper($llibre)=="E" ) ? config('tsystems.book_in_id') : config('tsystems.book_out_id');
+        $book_id=$this->getLlibreId($llibre);
+
         $ret=$this->call('selectAnnotations',[
             'SELECTIONCRITERIA'=>[
                 'CRITERIAITEM'=>[
@@ -48,15 +54,18 @@ class TsystemsRegistreService extends TsystemsService
         if(isset($ret->tError)){
             throw new Exception($ret->tError->DESCRIPTION);
         }else{
-            // dd($ret);
-            return TSAnnotation::cast($ret, ['root_node'=>NULL,'forcemultiple'=>FALSE]);
+            if(isset($ret->ANNOTATION)){
+               return TSAnnotation::cast($ret, ['root_node'=>NULL,'forcemultiple'=>FALSE]);
+            }else{
+                throw new TsystemsNoResultsException("No annotations");
+            }
         }
     }
 
 
     public function getAnnotationByNumber($number, $llibre='E'){
         
-        $book_id = (strtoupper($llibre)=="E" ) ? config('tsystems.book_in_id') : config('tsystems.book_out_id');
+        $book_id=$this->getLlibreId($llibre);
 
         $ret=$this->call('selectAnnotations',[
             'SELECTIONCRITERIA'=>[
@@ -76,8 +85,12 @@ class TsystemsRegistreService extends TsystemsService
         if(isset($ret->tError)){
             throw new Exception($ret->tError->DESCRIPTION);
         }else{
-            // dd($ret);
-            return TSAnnotation::cast($ret, ['root_node'=>NULL,'forcemultiple'=>FALSE]);
+            
+            if(isset($ret->ANNOTATION)){
+                return TSAnnotation::cast($ret, ['root_node'=>NULL,'forcemultiple'=>FALSE]);
+            }else{
+                throw new TsystemsNoResultsException("No annotations");
+            }
         }
     }
     
@@ -89,8 +102,8 @@ class TsystemsRegistreService extends TsystemsService
         return null;
     }
     
-    public function getAnnotationDocuments($dboid){
-        $ret=$this->call('getAnnotationDocuments',[
+    public function getAnnotationDocuments($dboid, $with_content=false){
+        $ret=$this->call($with_content ? 'getAnnotationDocuments' : 'getAnnotationDocumentHeaders',[
             'ANNOTATION'=>[
                 'DBOID'=>$dboid
             ],
@@ -100,11 +113,60 @@ class TsystemsRegistreService extends TsystemsService
         if(isset($ret->tError)){
             throw new Exception($ret->tError->DESCRIPTION);
         }else{
-            // dd($ret->RETURN->RETVALUE->DOCUMENTS);
-            return TSDocumentRegistre::cast($ret->RETURN->RETVALUE->DOCUMENTS, ['root_node'=>NULL,'forcemultiple'=>FALSE]);
+            if($ret->RETURN->RETVALUE->DOCUMENTS ??null){
+                return TSDocumentRegistre::cast($ret->RETURN->RETVALUE->DOCUMENTS, ['root_node'=>NULL,'forcemultiple'=>FALSE]);
+            }else{
+                return [];
+            }
         }
     }
     
+    public function createAnnotation($content=[], $llibre='E'){
+        $book_id=$this->getLlibreId($llibre);
 
+        $ret=$this->call('sendRequest', [
+            'ANNOTATION'=>[
+                'BOOK' => $book_id,
+                'ABSTRACT' =>'Lalalala',
+                'APPLICANTS'=>[
+                    'APPLICANT'=>[
+                        'NAME'=>'Test',
+                        'FAMILYNAME'=>'Testinyo',
+                        'SECONDNAME' =>'Probando',
+                        'VATACRON' =>'ES',
+                        'IDNUMBER'=>'11111112',
+                        'CTRLDIGIT'=>'L',
+                        'PRSNTYPE'=>'F',
+                        'ISMAINAPPLICANT'=> 'true',
+                        'RELTYPE'=>'INTERESADO',
+                        'ADDRESS_DATA' =>
+                            [  
+                                'DACRONYM'=> 'CL',
+                                'ADSTNAME' => 'NOVA',
+                                'ADSNUM1' => '2',
+                                'ADZIPCODE' => '2222',
+                                'ADMUNNAME' => 'GIJON',
+                                'ADPROVNAME' => 'ASTURIAS',
+                                'ADCNTRYNAME' => 'ESPAÑA',
+                            ]
+                        
+                    ]
+                ]
+            ],
+
+        ],['request_method_prefix'=>true, 'response_method_prefix'=>true, 'request_method_container'=>false, 'response_method_container'=>false]);
+        
+        dd($ret);
+        if(isset($ret->tError)){
+            throw new Exception($ret->tError->DESCRIPTION);
+        }else{
+            if($ret->RETURN->RETVALUE->DOCUMENTS ??null){
+                return TSDocumentRegistre::cast($ret->RETURN->RETVALUE->DOCUMENTS, ['root_node'=>NULL,'forcemultiple'=>FALSE]);
+            }else{
+                return [];
+            }
+        }
+    }
+    
 
 }
