@@ -94,14 +94,20 @@ class TsystemsRegistreService extends TsystemsService
         }
     }
     
-    public function getJustificant($dboid){
-        $docs=$this->getAnnotationDocuments($dboid);
+    public function getJustificant($dboid, $with_content=false){
+        $docs=$this->getAnnotationDocuments($dboid, $with_content);
         if($docs){
             return collect($docs)->where('documenttypecode',"Tipo_dat_Just")->first();
         }
         return null;
     }
     
+    public function getAnnotationDocumentsByNumber($number, $llibre='E', $with_content=false){
+        $annotation= $this->getAnnotationByNumber($number, $llibre);
+        if($annotation) return $annotation->getDocuments($with_content);
+
+
+    }
     public function getAnnotationDocuments($dboid, $with_content=false){
         $ret=$this->call($with_content ? 'getAnnotationDocuments' : 'getAnnotationDocumentHeaders',[
             'ANNOTATION'=>[
@@ -121,51 +127,91 @@ class TsystemsRegistreService extends TsystemsService
         }
     }
     
-    public function createAnnotation($content=[], $llibre='E'){
+    public function createAnnotation($content=[], $interessats=[], $documents=[], $llibre='E'){
         $book_id=$this->getLlibreId($llibre);
 
+        $args=[
+            'BOOK' => $book_id,
+            'ABSTRACT' =>$content['assumpte'] ?? 'Assumpte',
+            'DOJUSTIF' =>'true'
+        ];
+
+        if($interessats){
+            $args['APPLICANTS']=[];
+
+            foreach($interessats as $interessat){
+                $args['APPLICANTS'][]=$interessat;
+                //     [
+                //     'NAME'=> $interessat["nom"]??'',
+                //     'FAMILYNAME'=> $interessat["cognom1"]??'',
+                //     'SECONDNAME' => $interessat["cognom2"]??'',
+                //     'VATACRON' => $interessat["tipus_ident"]??'ES',
+                //     'IDNUMBER'=> $interessat["identificador"]??'',
+                //     'CTRLDIGIT'=> $interessat["ctrl_digit"]??'',
+                //     'PRSNTYPE'=> $interessat["rol_persona"]??'F',
+                //     'ISMAINAPPLICANT'=> 'true',
+                //     'RELTYPE'=>'INTERESADO',
+                //     'ADDRESS_DATA' =>
+                //         [  
+                //             'ADACRONYM'=> 'CL',
+                //             'ADSTNAME' => 'NOVA',
+                //             'ADSNUM1' => '2',
+                //             'ADZIPCODE' => '2222',
+                //             'ADMUNNAME' => 'GIJON',
+                //             'ADPROVNAME' => 'ASTURIAS',
+                //             'ADCNTRYNAME' => 'ESPAÑA',
+                //         ]
+                    
+                // ];
+            }
+
+        }
+
+        if($documents){
+            $args['DOCUMENTS']=[];
+
+            foreach($documents as $document){
+                $args['DOCUMENT'][]= $document;
+                // [
+                //     'NAME' => $document["filename"] ?? 'document',    // name    
+                //     'DOCUMENTTYPE' => $document["document_type"] ?? '2017000010007794100000', // DBOID DE LA TABLA TPERSDOCTYPE
+                //     'DOCUMENTCONTENT'=>[
+                //         'CONTENTS' => $document["filecontent"], //base64 archivo
+                //         'MIMETYPE' => $document["mimetype"] ?? "application/pdf",
+                //     ],
+                //     'DESCRIPTION' => $document["description"]??'',
+                // ];
+            }
+
+        }
+          
+        
         $ret=$this->call('sendRequest', [
-            'ANNOTATION'=>[
-                'BOOK' => $book_id,
-                'ABSTRACT' =>'Lalalala',
-                'APPLICANTS'=>[
-                    'APPLICANT'=>[
-                        'NAME'=>'Test',
-                        'FAMILYNAME'=>'Testinyo',
-                        'SECONDNAME' =>'Probando',
-                        'VATACRON' =>'ES',
-                        'IDNUMBER'=>'11111112',
-                        'CTRLDIGIT'=>'L',
-                        'PRSNTYPE'=>'F',
-                        'ISMAINAPPLICANT'=> 'true',
-                        'RELTYPE'=>'INTERESADO',
-                        'ADDRESS_DATA' =>
-                            [  
-                                'DACRONYM'=> 'CL',
-                                'ADSTNAME' => 'NOVA',
-                                'ADSNUM1' => '2',
-                                'ADZIPCODE' => '2222',
-                                'ADMUNNAME' => 'GIJON',
-                                'ADPROVNAME' => 'ASTURIAS',
-                                'ADCNTRYNAME' => 'ESPAÑA',
-                            ]
-                        
-                    ]
-                ]
-            ],
+            'ANNOTATION'=>$args,
 
         ],['request_method_prefix'=>true, 'response_method_prefix'=>true, 'request_method_container'=>false, 'response_method_container'=>false]);
         
-        dd($ret);
+        // dump($ret);
         if(isset($ret->tError)){
             throw new Exception($ret->tError->DESCRIPTION);
         }else{
-            if($ret->RETURN->RETVALUE->DOCUMENTS ??null){
-                return TSDocumentRegistre::cast($ret->RETURN->RETVALUE->DOCUMENTS, ['root_node'=>NULL,'forcemultiple'=>FALSE]);
+            if($ret){
+                return TSAnnotation::cast($ret, ['root_node'=>NULL,'forcemultiple'=>FALSE]);//$ret; //TSDocumentRegistre::cast($ret->RETURN->RETVALUE->DOCUMENTS, ['root_node'=>NULL,'forcemultiple'=>FALSE]);
             }else{
                 return [];
             }
         }
+    }
+
+    public function testPdf(){
+        $file="c:\\Users\\tmedrano\\Downloads\\2010-11-cal-senzill-conserves-naturals-pere-claver-16-3r-3a-t-rrega-20240108143559.pdf";
+        $contents=base64_encode(file_get_contents($file));
+        $this->createAnnotation([
+            "assumpte"=>"pepepepe popopo",
+            "filename"=>"test.pdf",
+            "filecontent"=>$contents
+        ]);
+
     }
     
 

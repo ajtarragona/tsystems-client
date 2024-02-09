@@ -44,8 +44,12 @@ class TSAnnotation extends TSModel
     ];
 
 
-    public function getJustificant(){
-      return TsystemsRegistre::getJustificant($this->dboid);
+    public function getJustificant($with_content=false){
+      return TsystemsRegistre::getJustificant($this->dboid, $with_content);
+    }
+    
+    public function getDocuments($with_content=false){
+      return TsystemsRegistre::getAnnotationDocuments($this->dboid,$with_content);
     }
     
   
