@@ -3,6 +3,7 @@
 namespace Ajtarragona\Tsystems\Services;
 
 use Ajtarragona\Tsystems\Exceptions\TsystemsNoResultsException;
+use Ajtarragona\Tsystems\Facades\TsystemsTercers;
 use Ajtarragona\Tsystems\Helpers\A2XML;
 use Ajtarragona\Tsystems\Helpers\Array2XML;
 use Ajtarragona\Tsystems\Helpers\TSHelpers;
@@ -96,9 +97,14 @@ class TsystemsRegistreService extends TsystemsService
     
     public function getJustificant($dboid, $with_content=false){
         $docs=$this->getAnnotationDocuments($dboid, $with_content);
+        $tipo=config('tsystems.codigo_justif_out');
+
         if($docs){
-            return collect($docs)->where('documenttypecode',"Tipo_dat_Just")->first();
+            if($docs instanceof TSDocumentRegistre && $docs->documenttypecode == $tipo) return $docs;
+            
+            return collect($docs)->where('documenttypecode', $tipo)->first();
         }
+        
         return null;
     }
     
@@ -130,39 +136,25 @@ class TsystemsRegistreService extends TsystemsService
     public function createAnnotation($content=[], $interessats=[], $documents=[], $llibre='E'){
         $book_id=$this->getLlibreId($llibre);
 
-        $args=[
-            'BOOK' => $book_id,
-            'ABSTRACT' =>$content['assumpte'] ?? 'Assumpte',
-            'DOJUSTIF' =>'true'
-        ];
+        $args=array_merge(
+            $content,
+            [
+                'BOOK' => $book_id,
+                'STATECODE'=>config('tsystems.STATECODE'),
+                'REGOFF'=>config('tsystems.REGOFF'),
+                'SOURCECODE'=>config('tsystems.SOURCECODE'),
+                'DOJUSTIF' =>'true',
+                'JUSTIFCODE' =>config('tsystems.JUSTIFCODE')
+        ]);
+
+
+        
 
         if($interessats){
-            $args['APPLICANTS']=[];
+            $args['APPLICANTS']=['APPLICANT'=>[]];
 
             foreach($interessats as $interessat){
-                $args['APPLICANTS'][]=$interessat;
-                //     [
-                //     'NAME'=> $interessat["nom"]??'',
-                //     'FAMILYNAME'=> $interessat["cognom1"]??'',
-                //     'SECONDNAME' => $interessat["cognom2"]??'',
-                //     'VATACRON' => $interessat["tipus_ident"]??'ES',
-                //     'IDNUMBER'=> $interessat["identificador"]??'',
-                //     'CTRLDIGIT'=> $interessat["ctrl_digit"]??'',
-                //     'PRSNTYPE'=> $interessat["rol_persona"]??'F',
-                //     'ISMAINAPPLICANT'=> 'true',
-                //     'RELTYPE'=>'INTERESADO',
-                //     'ADDRESS_DATA' =>
-                //         [  
-                //             'ADACRONYM'=> 'CL',
-                //             'ADSTNAME' => 'NOVA',
-                //             'ADSNUM1' => '2',
-                //             'ADZIPCODE' => '2222',
-                //             'ADMUNNAME' => 'GIJON',
-                //             'ADPROVNAME' => 'ASTURIAS',
-                //             'ADCNTRYNAME' => 'ESPAÑA',
-                //         ]
-                    
-                // ];
+                $args['APPLICANTS']['APPLICANT'][]=$interessat;
             }
 
         }
@@ -171,27 +163,19 @@ class TsystemsRegistreService extends TsystemsService
             $args['DOCUMENTS']=[];
 
             foreach($documents as $document){
-                $args['DOCUMENT'][]= $document;
-                // [
-                //     'NAME' => $document["filename"] ?? 'document',    // name    
-                //     'DOCUMENTTYPE' => $document["document_type"] ?? '2017000010007794100000', // DBOID DE LA TABLA TPERSDOCTYPE
-                //     'DOCUMENTCONTENT'=>[
-                //         'CONTENTS' => $document["filecontent"], //base64 archivo
-                //         'MIMETYPE' => $document["mimetype"] ?? "application/pdf",
-                //     ],
-                //     'DESCRIPTION' => $document["description"]??'',
-                // ];
+                $args['DOCUMENTS']['DOCUMENT'][]= $document;
+                
             }
 
         }
           
-        
+        // dd($args);  
         $ret=$this->call('sendRequest', [
             'ANNOTATION'=>$args,
 
         ],['request_method_prefix'=>true, 'response_method_prefix'=>true, 'request_method_container'=>false, 'response_method_container'=>false]);
         
-        // dump($ret);
+        // dd("RET:",$ret);
         if(isset($ret->tError)){
             throw new Exception($ret->tError->DESCRIPTION);
         }else{
@@ -203,14 +187,92 @@ class TsystemsRegistreService extends TsystemsService
         }
     }
 
+    public function testCreate(){
+        return;
+    // //si no existe la creo
+        $tmp_persona=[
+            "VATACRON" => "ES",
+            "IDNUMBER" => "U2398667",
+            "CTRLDIGIT" => "2",
+            "PERSONTYPE" => "J",
+            "FULLNAME" => "Empresa prueba txomin 2",
+        ];
+
+
+        $person=TsystemsTercers::createPerson($tmp_persona);
+        // dd($person);
+        $PERSON_ID=0;
+
+        if($person){
+            $PERSON_ID = $person->dboid;
+        }
+
+        if($PERSON_ID){
+            $args=[
+                "ABSTRACT" => "TESTTTT",
+                'ANNOTGROUP'=>'900500000005271407659',
+            ];
+            $interessats=[
+                [
+                    "VATACRON" => "ES",
+                    "IDNUMBER" => "U2398667",
+                    "CTRLDIGIT" => "2",
+                    "PRSNTYPE" => "J",
+                    "ISMAINAPPLICANT" => "true",
+                    "RELTYPE" => "INTERESADO",
+                    "FULLNAME" => "Empresa prueba txomin 2",
+                    "PERSONID" => $PERSON_ID,
+                    'PERSCONTACTS'=>[
+                        'PERSCONTACT' => [
+                            [
+                                'WAY'=>[
+                                    'CODE' =>21,
+                                ],
+                                'WAYVALUE'=>'jandemor@piti.com',
+                                'ISDEFAULT'=>TRUE
+                            ]
+                        ]
+                    ]
+                    // "ADDRESS_DATA"=>[
+                    
+                    //     'ADPROVNAME' => 'TARRAGONA',
+                    //     'ADMUNNAME' => 'TARRAGONA',
+                    //     'ADCNTRYNAME' => 'ESPAÑA',
+                    //     'ADACRONYM' => 'RBLA',
+                    //     'ADSTNAME' => 'VELLA',
+                    //     'ADNUM1' => '1',
+                    //     'ADDUPLI1' => 'B',
+                    //     'ADZIPCODE' => '43003',
+                        
+                    // ]
+                    
+                ],
+                // [
+                //     "VATACRON" => "ES",
+                //     "IDNUMBER" => "47762271",
+                //     "CTRLDIGIT" => "B",
+                //     "PRSNTYPE" => "F",
+                //     "ISMAINAPPLICANT" => "false",
+                //     "RELTYPE" => "REPRESENT.",
+                //     "NAME" => "Txomin",
+                //     "FAMILYNAME" => "Medrano",
+                //     "SECONDNAME" => "Martorell",
+                //     "PERSONID" => "2000400000095411499500"
+                // ]
+                
+            ];
+            return $this->createAnnotation($args, $interessats);
+        }
+    }
+
     public function testPdf(){
-        $file="c:\\Users\\tmedrano\\Downloads\\2010-11-cal-senzill-conserves-naturals-pere-claver-16-3r-3a-t-rrega-20240108143559.pdf";
-        $contents=base64_encode(file_get_contents($file));
-        $this->createAnnotation([
-            "assumpte"=>"pepepepe popopo",
-            "filename"=>"test.pdf",
-            "filecontent"=>$contents
-        ]);
+        // $file="c:\\Users\\tmedrano\\Downloads\\2010-11-cal-senzill-conserves-naturals-pere-claver-16-3r-3a-t-rrega-20240108143559.pdf";
+        // $contents=base64_encode(file_get_contents($file));
+        // $this->createAnnotation([
+        //     "assumpte"=>"pepepepe popopo",
+        //     "filename"=>"test.pdf",
+        //     "filecontent"=>$contents
+        // ]);
 
     }
     

@@ -117,8 +117,9 @@ class TsystemsService
         $options=array_merge(self::$default_options, $options);
 
         $token =  $this->login();
-        // dump($token);
+        // dump($method, $token);
         $hash = $this->getHash($method, $token, $arguments);
+        // dump($hash);
 		return $this->returnCached($hash, function() use ($arguments, $token, $method, $options){
 
             $this->debug("CALLING doOperationTAO:" . $method);

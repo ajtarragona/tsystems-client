@@ -22,6 +22,7 @@ class TSPersContact extends TSModel
     
     protected static $root_node="perscontact";
     
+    public $way;
     public $waycode;
     public $wayvalue;
     public $isdefault;

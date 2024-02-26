@@ -91,7 +91,7 @@ class TsystemsTercersService extends TsystemsService
      */
     public function createPerson($persondata=[]){
 
- 
+        // dump("createPerson",$persondata);
         TSHelpers::uppercaseKeys($persondata);
         // dump($persondata)
         $params=array_merge([
@@ -100,7 +100,7 @@ class TsystemsTercersService extends TsystemsService
 
         ], to_array($persondata));
 
-        
+        // dd($params);
         $ret=$this->call('createPerson', $params ,["lower_request"=>true,"lower_response"=>true]);
         $person=TSPerson::cast($ret);
         return $person;

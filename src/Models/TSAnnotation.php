@@ -17,6 +17,7 @@ class TSAnnotation extends TSModel
     public $visiblenumber;  
     public $book;           
     public $bookcode;       
+    public $regoff;      
     public $direccode;      
     public $envircode;      
     public $annotts;        
