@@ -4,6 +4,7 @@ namespace Ajtarragona\Tsystems\Models;
 
 use Ajtarragona\Tsystems\Facades\TsystemsRegistre;
 use Ajtarragona\Tsystems\Traits\WithDBoid;
+use Carbon\Carbon;
 
 class TSAnnotation extends TSModel
 {
@@ -54,6 +55,12 @@ class TSAnnotation extends TSModel
     }
     
   
+    public function getFecha($format=null){
+      if(!$format) $format = "d/m/Y H:i:s";
+      //2024-02-27T11:36:03.000+01:00
+      return Carbon::parse($this->annotts)->format($format);
+    } 
+
   //   public function getDocumentos(){
   //     return TsystemsExpedients::getDocumentosExpedientByID($this->dboid);
   //   }
