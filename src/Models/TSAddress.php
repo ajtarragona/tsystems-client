@@ -27,7 +27,9 @@ class TSAddress extends TSModel
     public $toponymy;
     public $zipcode;
     public $fulladdress;
-
+    public $addresstype;
+    public $isdefault;
+    
     //los nombres
     public $munname;
     public $provname;
