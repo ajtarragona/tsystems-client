@@ -186,13 +186,23 @@ class TsystemsVialerService extends TsystemsService
         $municipi=$this->getMunicipiByCode($muncode);
         
         $args=[
+            
             "ACCESS" => [
-                'DBOID_STREET'=>$streetcode
+                'STREET'=> [
+                    'DBOID'=>$streetcode,
+                    'MUNICIPALITY' => [
+                        'DBOID' => $municipi->dboid
+                    ]
+                ]
             ]
         ];
 
         if($addressparts){
-            $args["ACCESS"] = array_merge($args["ACCESS"], $addressparts);
+            foreach($addressparts as $key=>$value){
+                if(in_array(strtoupper($key), ['NUM1','NUM2','DUPLI1','DUPLI2','INDKM','KM','INDBLOCK','FBLOCK','ACCESSTYPE','TOPONIMY','ZIPCODE'])){
+                    $args["ACCESS"][strtoupper($key)] = $value;
+                }
+            }
         }
         $ret=$this->call(
             'getAccesListByAccess',
@@ -227,7 +237,7 @@ class TsystemsVialerService extends TsystemsService
         if($addressparts){
             foreach($addressparts as $key=>$value){
                 if(in_array(strtoupper($key), ['NUM1','NUM2','DUPLI1','DUPLI2','KM','FBLOCK'])){
-                    $args["ACCESS"][$key] = $value;
+                    $args["ACCESS"][strtoupper($key)] = $value;
                 }else{
                     $args[$key] = $value;
                 }
