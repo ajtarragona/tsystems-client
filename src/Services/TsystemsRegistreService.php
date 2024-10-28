@@ -136,19 +136,18 @@ class TsystemsRegistreService extends TsystemsService
     public function createAnnotation($content=[], $interessats=[], $documents=[], $llibre='E'){
         $book_id=$this->getLlibreId($llibre);
 
-        $args=array_merge(
-            $content,
-            [
-                'BOOK' => $book_id,
-                'STATECODE'=>config('tsystems.STATECODE'),
-                'REGOFF'=>config('tsystems.REGOFF'),
-                'SOURCECODE'=>config('tsystems.SOURCECODE'),
-                'DOJUSTIF' =>'true',
-                'JUSTIFCODE' =>config('tsystems.JUSTIFCODE')
-        ]);
+        $args=array_merge([
+            'BOOK' => $book_id,
+            'STATECODE'=>config('tsystems.STATECODE'),
+            'REGOFF'=>config('tsystems.REGOFF'),
+            'SOURCECODE'=>config('tsystems.SOURCECODE'),
+            'DOJUSTIF' =>'true',
+            'JUSTIFCODE' =>config('tsystems.JUSTIFCODE')
+        ],$content);
 
 
-        
+
+       
 
         if($interessats){
             $args['APPLICANTS']=['APPLICANT'=>[]];
