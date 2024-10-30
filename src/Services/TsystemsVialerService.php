@@ -139,18 +139,22 @@ class TsystemsVialerService extends TsystemsService
         return TSAcronym::cast($ret);
     }
 
-    public function getCarrersByName($name,  $pagina=1, $muncode=null){
-        if(!$muncode) $muncode=$this->options->municipio_tarragona;
-        $municipi=$this->getMunicipiByCode($muncode);
+    public function getCarrersByName($name,  $options=[]){
+        // dd($name, $options);
+        $municipi_id= $this->options->default_municipi_dboid;
+
+        if($options['muncode'] ?? null){
+            $municipi=$this->getMunicipiByCode($options['muncode']);
+            if($municipi) $municipi_id=$municipi->dboid;
+        }
         
-        $ret=$this->call('getStreetListByStName',[
+
+        $ret=$this->call('getStreetListByStName', array_merge( $options, [
             'STNAME'=>$name,
-            'MUNICIPALITY' =>$municipi->dboid,
-            // [
-            //     'CODE' => $muncode
-            // ],
-           'PAGENUMBER'=> $pagina
-        ]);
+            'MUNICIPALITY' =>$municipi_id,
+            'NUMPAGE'=> ($options['NUMPAGE']??1),
+            'MAXRESULTS'=> ($options['MAXRESULTS']??100)
+        ]));
 
         // dd($ret);
         $ret=TSStreet::cast($ret);
@@ -162,9 +166,12 @@ class TsystemsVialerService extends TsystemsService
     }
         
     public function getCarrerByCode($code, $muncode=null){
-        if(!$muncode) $muncode=$this->options->municipio_tarragona;
-        // dump($muncode);
-        $municipi=$this->getMunicipiByCode($muncode);
+        $municipi_id= $this->options->default_municipi_dboid;
+
+        if($muncode){
+            $municipi=$this->getMunicipiByCode($muncode);
+            if($municipi) $municipi_id=$municipi->dboid;
+        }
         // dump($municipi);
         // dd("municipi",$municipi);
         // if($muncode){
@@ -172,7 +179,7 @@ class TsystemsVialerService extends TsystemsService
         // }
         $ret=$this->call('getStreetByCode',[
             'STREETCODE'=>$code,
-            'MUNICIPALITY' => $municipi->dboid
+            'MUNICIPALITY' => $municipi_id
             
         ],["lower_request"=>true, "lower_response"=>true]);
         // dd($ret);
@@ -182,25 +189,30 @@ class TsystemsVialerService extends TsystemsService
 
 
 
-    public function getAccessos($streetcode, $pagina=1, $addressparts=[], $muncode=null){
+    public function getAccessos($streetcode, $options=[], $muncode=null){
         if(!$muncode) $muncode=$this->options->municipio_tarragona;
 
-        $municipi=$this->getMunicipiByCode($muncode);
-        
+        $municipi_id= $this->options->default_municipi_dboid;
+
+        if($options['muncode'] ?? null){
+            $municipi=$this->getMunicipiByCode($options['muncode']);
+            if($municipi) $municipi_id=$municipi->dboid;
+        }
         $args=[
             "ACCESS" => [
                 'STREET'=> [
                     'DBOID'=>$streetcode,
                     'MUNICIPALITY' => [
-                        'DBOID' => $municipi->dboid
+                        'DBOID' => $municipi_id
                     ]
                 ]
             ],
-           'PAGENUMBER'=> $pagina
+           'NUMPAGE'=> ($options['NUMPAGE']??1),
+           'MAXRESULTS'=> ($options['MAXRESULTS']??100)
         ];
 
-        if($addressparts){
-            foreach($addressparts as $key=>$value){
+        if($options){
+            foreach($options as $key=>$value){
                 if(in_array(strtoupper($key), ['NUM1','NUM2','DUPLI1','DUPLI2','INDKM','KM','INDBLOCK','FBLOCK','ACCESSTYPE','TOPONIMY','ZIPCODE'])){
                     $args["ACCESS"][strtoupper($key)] = $value;
                 }
@@ -208,7 +220,9 @@ class TsystemsVialerService extends TsystemsService
         }
         $ret=$this->call(
             'getAccesListByAccess',
-            $args,
+            // $args,
+            array_merge($options, $args),
+
             ['request_method_prefix'=>false, 'response_method_prefix'=>false,"lower_request"=>false, "lower_response"=>false]
         );
         
@@ -220,14 +234,18 @@ class TsystemsVialerService extends TsystemsService
     public function getAddresses($streetcode, $addressparts=[], $muncode=null){
         if(!$muncode) $muncode=$this->options->municipio_tarragona;
 
-        $municipi=$this->getMunicipiByCode($muncode);
-        // dd($muncode, $municipi);
+        $municipi_id= $this->options->default_municipi_dboid;
+
+        if($muncode){
+            $municipi=$this->getMunicipiByCode($muncode);
+            if($municipi) $municipi_id=$municipi->dboid;
+        }// dd($muncode, $municipi);
 
         // getAddressListByOrderByAdd
         $args=[
             'MUNICIPALITY' => //'101700200000651500001'
             [
-                'DBOID' => $municipi->dboid
+                'DBOID' => $municipi_id
             ],
             "ACCESS" => [
                 'STREET' => [
@@ -260,15 +278,19 @@ class TsystemsVialerService extends TsystemsService
     }
     public function searchAddresses($streetname, $addressparts=[], $muncode=null){
         if(!$muncode) $muncode=$this->options->municipio_tarragona;
+        $municipi_id= $this->options->default_municipi_dboid;
 
-        $municipi=$this->getMunicipiByCode($muncode);
+        if($muncode){
+            $municipi=$this->getMunicipiByCode($muncode);
+            if($municipi) $municipi_id=$municipi->dboid;
+        }
         // dd($muncode, $municipi);
 
         // getAddressListByOrderByAdd
         $args=[
             'MUNICIPALITY' => //'101700200000651500001'
             [
-                'DBOID' => $municipi->dboid
+                'DBOID' => $municipi_id
             ],
             "ACCESS" => [
                 'STREET' => [
