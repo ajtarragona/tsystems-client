@@ -18,14 +18,15 @@ class TSAccess extends TSModel
     public $km;
     public $indblock;
     public $block;
+    public $fblock;
     public $stair;
     public $floor;
     public $door;
     public $toponymy;
     public $zipcode;
+    public $accesstype;
   
-    
-
+   
 
 
 }

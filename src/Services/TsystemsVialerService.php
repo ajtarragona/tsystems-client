@@ -215,6 +215,7 @@ class TsystemsVialerService extends TsystemsService
             foreach($options as $key=>$value){
                 if(in_array(strtoupper($key), ['NUM1','NUM2','DUPLI1','DUPLI2','INDKM','KM','INDBLOCK','FBLOCK','ACCESSTYPE','TOPONIMY','ZIPCODE'])){
                     $args["ACCESS"][strtoupper($key)] = $value;
+                    unset($options[$key]);
                 }
             }
         }
