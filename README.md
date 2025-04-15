@@ -96,8 +96,18 @@ Funció | Paràmetres | Retorn
 Funció | Paràmetres | Retorn 
 --- | --- | --- 
 **getCountriesByName** | `name`: nom a buscar | Un array d'objectes `TSCountry` 
+**getCountryByCode** | `code`: codi a buscar  | un objecte `TSCountry` 
 **getAllCountries** |  | Un array d'objectes `TSCountry` 
 **getProvinciesByName** | `name`: nom a buscar| Un array d'objectes `TSProvince` 
+**getAllProvincies** | `countrycode*`: code de pais (per defecte Espanya) | Un array d'objectes `TSProvince` 
+**getProvinciesByName** | `name`: nom a buscar<br/>`countrycode*`: code de pais | Un array d'objectes `TSProvince` 
+**getProvinciaByCode** | `code`: codi a buscar<br/>`countrycode*`: code de pais | Un objecte `TSProvince`  
+**getAllMunicipis** | `provcode*`: codi de provincia (per defecte Tarragona) | Un array d'objectes `TSMunicipality`  
+**getMunicipisByName** | `name`: nom a buscar<br/>`provcode*`: codi de provincia (per defecte Tarragona) | Un array d'objectes `TSMunicipality`   
+**getMunicipiByCode** | `code`: codi a buscar<br/>`provcode*`: codi de provincia (per defecte Tarragona) | Un objecte `TSMunicipality`    
+**getAcronymList** | | Un array d'objectes `TSAcronym`
+**getCarrersByName** | `name`: nom a buscar<br/>`provcode*`: codi de provincia (per defecte Tarragona) | Un array d'objectes `TSStreet` 
+**getCarrerByCode** | `code`: codi a buscar<br/>`provcode*`: codi de provincia (per defecte Tarragona) | Un objecte `TSStreet`  
 
 ### Padró
 Funció | Paràmetres | Retorn 
