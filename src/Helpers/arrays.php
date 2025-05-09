@@ -32,6 +32,12 @@ if (! function_exists('to_object')) {
 }
 
 
+if (! function_exists('json_pretty')) {
+	function json_pretty($string) {
+	 	return json_encode($string, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+	}
+}
+
  
 if (! function_exists('is_assoc')) {
 

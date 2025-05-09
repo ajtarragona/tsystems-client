@@ -122,9 +122,7 @@ class TsystemsService
         // dump($hash);
 		return $this->returnCached($hash, function() use ($arguments, $token, $method, $options){
 
-            $this->debug("CALLING doOperationTAO:" . $method);
-            $this->debug("With arguments:");
-            $this->debug($arguments);
+            $this->debug("CALLING doOperationTAO:" . $method ." With arguments:\n" . json_pretty($arguments));
 
 
             if($options["request_method_container"]??true){
@@ -168,10 +166,8 @@ class TsystemsService
                 'token' => $tokentag,
             ]);
 
-            $this->debug("REQUEST:");
-            $this->debug($client->__getLastRequest());
-            $this->debug("RESPONSE:");
-            $this->debug($results);
+            $this->debug("REQUEST:\n" . $client->__getLastRequest());
+            $this->debug("RESPONSE \n ". $results);
             // echo "====== REQUEST HEADERS =====" . PHP_EOL;
             // dump($client->__getLastRequestHeaders());
             // echo "========= REQUEST ==========" . PHP_EOL;
@@ -201,8 +197,7 @@ class TsystemsService
             default: $exception= new TsystemsOperationException($error->DESCRIPTION);break;
         }
 
-        $this->debug("EXCEPTION: ");
-        $this->debug($exception);
+        $this->debug("EXCEPTION: \n ". json_pretty($exception));
         throw $exception;
     }
 
