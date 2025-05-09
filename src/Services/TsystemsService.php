@@ -41,9 +41,9 @@ class TsystemsService
     }
     protected function debug($message){
         if($this->debugEnabled()){
-            if(is_array($message)) Log::debug($message);
-            else if(is_object($message)) Log::debug(json_encode($message));
-            else Log::debug($message );
+            if(is_array($message)) Log::debug("TSystems \n". json_encode($message));
+            else if(is_object($message)) Log::debug("TSystems \n".json_encode($message));
+            else Log::debug("TSystems - ".$message );
         }        
     }
     protected function client(){
@@ -166,7 +166,7 @@ class TsystemsService
                 'token' => $tokentag,
             ]);
 
-            $this->debug("REQUEST:\n" . json_pretty($client->__getLastRequest()));
+            $this->debug("REQUEST\n" . json_pretty($client->__getLastRequest()));
             $this->debug("RESPONSE \n ". json_pretty($results));
             // echo "====== REQUEST HEADERS =====" . PHP_EOL;
             // dump($client->__getLastRequestHeaders());
