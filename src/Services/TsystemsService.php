@@ -41,9 +41,9 @@ class TsystemsService
     }
     protected function debug($message){
         if($this->debugEnabled()){
-            if(is_array($message)) Log::debug("TSystems \n". json_encode($message));
-            else if(is_object($message)) Log::debug("TSystems \n".json_encode($message));
-            else Log::debug("TSystems - ".$message );
+            if(is_array($message)) Log::debug("[TSystemsClient]\n". json_encode($message));
+            else if(is_object($message)) Log::debug("[TSystemsClient]\n".json_encode($message));
+            else Log::debug("[TSystemsClient] ".$message );
         }        
     }
     protected function client(){
