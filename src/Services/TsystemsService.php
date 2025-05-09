@@ -166,8 +166,8 @@ class TsystemsService
                 'token' => $tokentag,
             ]);
 
-            $this->debug("REQUEST:\n" . $client->__getLastRequest());
-            $this->debug("RESPONSE \n ". $results);
+            $this->debug("REQUEST:\n" . json_pretty($client->__getLastRequest()));
+            $this->debug("RESPONSE \n ". json_pretty($results));
             // echo "====== REQUEST HEADERS =====" . PHP_EOL;
             // dump($client->__getLastRequestHeaders());
             // echo "========= REQUEST ==========" . PHP_EOL;
