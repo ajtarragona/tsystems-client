@@ -22,6 +22,8 @@ class TSPerson extends TSModel
     public $secnamepart;
     public $cianame;
     public $persontype;
+    public $sex;
+    public $idiom;
 
     public $addresses;
     public $perscontacts;
