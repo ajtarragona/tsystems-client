@@ -2,6 +2,7 @@
 
 namespace Ajtarragona\Tsystems\Services;
 
+use Ajtarragona\Tsystems\Exceptions\TsystemsAuthException;
 use Ajtarragona\Tsystems\Helpers\TSHelpers;
 use Ajtarragona\Tsystems\Models\TSDocumento;
 use Ajtarragona\Tsystems\Models\TSExpedient;
@@ -20,6 +21,22 @@ class TsystemsExpedientsService extends TsystemsService
 
  
     
+    public function getUserToken($user, $password){
+         
+        $this->debug(__('Login : :user@:password', ["user"=>$user,"password"=>$password]) );
+
+        $ret=$this->client()->login(["user"=>$user,"password"=>$password]);
+
+        $token=$ret->loginReturn ?? null;
+        if(!$token) throw new TsystemsAuthException("Auth exception");
+
+        if(Str::startsWith($token, "ERROR")){
+            throw new TsystemsAuthException($token);
+        }else{
+            return $token;
+        }
+    
+    }
 
  
     public function getExpedientsByDNI($dni){
