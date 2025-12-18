@@ -85,3 +85,34 @@ if(!function_exists('array_to_csv'))
     }
  }
 
+
+
+if(!function_exists('reverseCamelCase'))
+{
+		
+	function reverseCamelCase($input) {
+		if (strtoupper($input) === $input) {
+			return $input;
+		}
+		// Añade espacio antes de cada mayúscula (excepto la primera)
+		$spaced = preg_replace('/(?<!^)([A-Z])/', ' $1', $input);
+		// Convierte todo a minúsculas excepto la primera letra
+		return ucfirst(strtolower($spaced));
+	}
+
+ }
+
+
+
+ 
+
+
+if(!function_exists('removeHTML'))
+{
+		
+	function removeHTML($input) {
+
+		return strip_tags($input);
+	}
+
+ }	

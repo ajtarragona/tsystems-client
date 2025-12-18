@@ -34,3 +34,13 @@ if (! function_exists('ts_registre')) {
 		return new \Ajtarragona\Tsystems\Services\TsystemsRegistreService($options);
 	}
 }
+
+
+if (! function_exists('ts_formatdate')) {
+	function ts_formatdate($date){
+		if (!$date) return null;
+		$date = preg_replace('/[^0-9]/', '', $date);
+		if (strlen($date) !== 8) return null;
+		return substr($date, 6, 2) . '/' . substr($date, 4, 2) . '/' . substr($date, 0, 4);
+	}
+}

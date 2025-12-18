@@ -6,7 +6,9 @@ use Ajtarragona\Tsystems\Exceptions\TsystemsAuthException;
 use Ajtarragona\Tsystems\Helpers\TSHelpers;
 use Ajtarragona\Tsystems\Models\TSDocumento;
 use Ajtarragona\Tsystems\Models\TSExpedient;
+use Ajtarragona\Tsystems\Models\TSExpedientAnnotation;
 use Ajtarragona\Tsystems\Models\TSPerson;
+use Ajtarragona\Tsystems\Models\TSPlazo;
 use Exception;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -83,6 +85,52 @@ class TsystemsExpedientsService extends TsystemsService
 
         
     }
+    public function getPlazosExpedientByID($id){
+        
+
+        $ret=$this->call('ConsultaPlazosbyDboid',[
+            'DBOID_EXP'=>$id,
+        ],['request_method_prefix'=>true, 'response_method_prefix'=>true]);
+       
+        // dd($ret);
+        return TSPlazo::cast($ret, ['root_node'=>'ListaPlazos','forcemultiple'=>true]);
+    }
+    
+    public function getAnnotationsInExpedientByID($id){
+        $ret=$this->call('ConsultaAnnotationsInbyDboid',[
+            'DBOID_EXP'=>$id,
+        ],['request_method_prefix'=>true, 'response_method_prefix'=>true]);
+        
+        return TSExpedientAnnotation::cast($ret, ['root_node'=>'ListaAnotaciones','forcemultiple'=>true]);
+    }
+
+    public function getAnnotationsOutExpedientByID($id){
+        $ret=$this->call('ConsultaAnnotationsOutbyDboid',[
+            'DBOID_EXP'=>$id,
+        ],['request_method_prefix'=>true, 'response_method_prefix'=>true]);
+        
+        //NO IMPLEMENTADO EN TSYSTEMS
+        return [];
+        // dd($ret);
+        // return TSExpedientAnnotation::cast($ret, ['root_node'=>'ListaAnotaciones','forcemultiple'=>true]);
+
+    }
+    public function getExpAsociadosExpedientByID($id){
+        $ret=$this->call('ConsultaExpAsociadosbyDboid',[
+            'DBOID_EXP'=>$id,
+        ],['request_method_prefix'=>true, 'response_method_prefix'=>true]);
+        // dd($ret);
+       return TSExpedient::cast($ret, ['root_node'=>'ListaExpRelacionados','forcemultiple'=>true]);
+        // dd($ret);
+    }
+    // public function getHojaRutaExpedientByID($id){
+    //     $ret=$this->call('ConsultaHojaRutabyDboid',[
+    //         'DBOID_EXP'=>$id,
+    //     ],['request_method_prefix'=>true, 'response_method_prefix'=>true]);
+
+    //    return $ret;
+    //     // dd($ret);
+    // }
     public function getTareasExpedientByID($id){
         
 
